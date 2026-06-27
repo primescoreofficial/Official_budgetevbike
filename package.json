@@ -1,0 +1,17 @@
+{
+  "name": "budgetevbike-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix SweetyBhati-Official_budgetevbike-ae26000 run dev",
+    "build": "npm --prefix SweetyBhati-Official_budgetevbike-ae26000 run build",
+    "start": "npm --prefix SweetyBhati-Official_budgetevbike-ae26000 run start",
+    "lint": "npm --prefix SweetyBhati-Official_budgetevbike-ae26000 run lint"
+  },
+  "dependencies": {
+    "@react-google-maps/api": "^2.20.8",
+    "@supabase/supabase-js": "^2.108.2",
+    "@types/leaflet": "^1.9.21",
+    "react-leaflet": "^5.0.0"
+  }
+}
