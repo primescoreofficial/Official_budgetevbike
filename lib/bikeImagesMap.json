@@ -1,0 +1,790 @@
+[
+  {
+    "Name": "Ampere Magnus.png",
+    "Parent": "Ampere"
+  },
+  {
+    "Name": "Ampere Nexus.png",
+    "Parent": "Ampere"
+  },
+  {
+    "Name": "Ampere Primus.png",
+    "Parent": "Ampere"
+  },
+  {
+    "Name": "Ampere Reo Li.png",
+    "Parent": "Ampere"
+  },
+  {
+    "Name": "Ampere Zeal EX.png",
+    "Parent": "Ampere"
+  },
+  {
+    "Name": "Anther Energy 450 Apex.png",
+    "Parent": "Ather Energy"
+  },
+  {
+    "Name": "Anther Energy 450 Rizta.png",
+    "Parent": "Ather Energy"
+  },
+  {
+    "Name": "Anther Energy 450S.png",
+    "Parent": "Ather Energy"
+  },
+  {
+    "Name": "Anther Energy 450X.png",
+    "Parent": "Ather Energy"
+  },
+  {
+    "Name": "Atumobile Atum 1.0 Standard Caf.png",
+    "Parent": "Atumobile"
+  },
+  {
+    "Name": "Atumobile AtumVader.png",
+    "Parent": "Atumobile"
+  },
+  {
+    "Name": "Avan Motors Trend E Double Battery.png",
+    "Parent": "Avan Motors"
+  },
+  {
+    "Name": "Avan Motors Trend E Single Battery.png",
+    "Parent": "Avan Motors"
+  },
+  {
+    "Name": "Avan Motors Xero+.png",
+    "Parent": "Avan Motors"
+  },
+  {
+    "Name": "Avon Cycles E-Lite Standard.png",
+    "Parent": "Avon Cycles"
+  },
+  {
+    "Name": "Avon Cycles E-Plus Standard.png",
+    "Parent": "Avon Cycles"
+  },
+  {
+    "Name": "Avon Cycles E-Scoot Standard.png",
+    "Parent": "Avon Cycles"
+  },
+  {
+    "Name": "Bajaj Auto Chetak.png",
+    "Parent": "Bajaj Auto"
+  },
+  {
+    "Name": "BattRE IOM Standard.png",
+    "Parent": "BattRE"
+  },
+  {
+    "Name": "BattRE LOEV Standard.png",
+    "Parent": "BattRE"
+  },
+  {
+    "Name": "BattRE One Standard.png",
+    "Parent": "BattRE"
+  },
+  {
+    "Name": "BattRE Storie Standard.png",
+    "Parent": "BattRE"
+  },
+  {
+    "Name": "Benling India Aura.png",
+    "Parent": "Benling India"
+  },
+  {
+    "Name": "Benling India Believe.png",
+    "Parent": "Benling India"
+  },
+  {
+    "Name": "Benling India Falcon.png",
+    "Parent": "Benling India"
+  },
+  {
+    "Name": "Benling India Kriti.png",
+    "Parent": "Benling India"
+  },
+  {
+    "Name": "BGauss A2 Standard.png",
+    "Parent": "BGauss"
+  },
+  {
+    "Name": "BGauss C12i EX.png",
+    "Parent": "BGauss"
+  },
+  {
+    "Name": "BGauss C12i MAX.png",
+    "Parent": "BGauss"
+  },
+  {
+    "Name": "BGauss D15 Pro.png",
+    "Parent": "BGauss"
+  },
+  {
+    "Name": "BGauss D15 Standard.png",
+    "Parent": "BGauss"
+  },
+  {
+    "Name": "BGauss RUV350 EX.png",
+    "Parent": "BGauss"
+  },
+  {
+    "Name": "BGauss RUV350 MAX.png",
+    "Parent": "BGauss"
+  },
+  {
+    "Name": "greaves electric.png",
+    "Parent": "BGauss"
+  },
+  {
+    "Name": "Bounce Infinity E1 LE.png",
+    "Parent": "Bounce Infinity"
+  },
+  {
+    "Name": "Bounce Infinity E1 X.png",
+    "Parent": "Bounce Infinity"
+  },
+  {
+    "Name": "Bounce Infinity E1+ Eco.png",
+    "Parent": "Bounce Infinity"
+  },
+  {
+    "Name": "Bounce Infinity E1+ Standard.png",
+    "Parent": "Bounce Infinity"
+  },
+  {
+    "Name": "Corrit Electric Hover Standard.png",
+    "Parent": "Corrit Electric"
+  },
+  {
+    "Name": "Corrit Electric Transit.png",
+    "Parent": "Corrit Electric"
+  },
+  {
+    "Name": "Cygni Energy E-Scoot Standard.png",
+    "Parent": "Detel"
+  },
+  {
+    "Name": "Detel Easy plus Standard.png",
+    "Parent": "Detel"
+  },
+  {
+    "Name": "Dynamo Infinity Standard.png",
+    "Parent": "Dynamo"
+  },
+  {
+    "Name": "Dynamo Rx1 Standard.png",
+    "Parent": "Dynamo"
+  },
+  {
+    "Name": "E-Sprinto Amery Standard.png",
+    "Parent": "E-Sprinto"
+  },
+  {
+    "Name": "E-Sprinto Rapo Standard.png",
+    "Parent": "E-Sprinto"
+  },
+  {
+    "Name": "E-Sprinto Roam Standard.png",
+    "Parent": "E-Sprinto"
+  },
+  {
+    "Name": "E-Sprinto Sena.png",
+    "Parent": "E-Sprinto"
+  },
+  {
+    "Name": "EeVe India Ahava Standard.png",
+    "Parent": "EeVe India"
+  },
+  {
+    "Name": "EeVe India Atreo Standard.png",
+    "Parent": "EeVe India"
+  },
+  {
+    "Name": "EeVe India Soul Standard.png",
+    "Parent": "EeVe India"
+  },
+  {
+    "Name": "EeVe India Wind Standard.png",
+    "Parent": "EeVe India"
+  },
+  {
+    "Name": "Enigma Automobiles Ambier.png",
+    "Parent": "Enigma Automobiles"
+  },
+  {
+    "Name": "Enigma Automobiles Cafe Racer.png",
+    "Parent": "Enigma Automobiles"
+  },
+  {
+    "Name": "Enigma Automobiles Crink Standard.png",
+    "Parent": "Enigma Automobiles"
+  },
+  {
+    "Name": "Enigma Automobiles Crink V2.png",
+    "Parent": "Enigma Automobiles"
+  },
+  {
+    "Name": "Evric Electric City Ride.png",
+    "Parent": "Gellon Electric"
+  },
+  {
+    "Name": "Gellon Electric Glide Standard.png",
+    "Parent": "Gellon Electric"
+  },
+  {
+    "Name": "Peda Motors E-Super Standard.png",
+    "Parent": "Gellon Electric"
+  },
+  {
+    "Name": "Gemopai Astrid Lite Standard.png",
+    "Parent": "Gemopai"
+  },
+  {
+    "Name": "Gemopai Miso Mini Utility.png",
+    "Parent": "Gemopai"
+  },
+  {
+    "Name": "Gemopai Ryder Standard.png",
+    "Parent": "Gemopai"
+  },
+  {
+    "Name": "Gemopai Ryder Super.png",
+    "Parent": "Gemopai"
+  },
+  {
+    "Name": "Li-ions Elektrik Spock Standard.png",
+    "Parent": "Gemopai"
+  },
+  {
+    "Name": "Godawari E-mobility Eblu Feo Standard.png",
+    "Parent": "Godawari E-mobility"
+  },
+  {
+    "Name": "Godawari E-mobility Eblu Feo X.png",
+    "Parent": "Godawari E-mobility"
+  },
+  {
+    "Name": "Hero Electric Atria LX.png",
+    "Parent": "Hero Electric"
+  },
+  {
+    "Name": "Hero Electric Eddy Standard.png",
+    "Parent": "Hero Electric"
+  },
+  {
+    "Name": "Hero Electric Flash LX.png",
+    "Parent": "Hero Electric"
+  },
+  {
+    "Name": "Hero Electric NYX HX Dual Battery.png",
+    "Parent": "Hero Electric"
+  },
+  {
+    "Name": "Hero Electric Optima cx 2.0.png",
+    "Parent": "Hero Electric"
+  },
+  {
+    "Name": "Hero Electric Optima cx 5.0.png",
+    "Parent": "Hero Electric"
+  },
+  {
+    "Name": "Hero Electric Optima ER.png",
+    "Parent": "Hero Electric"
+  },
+  {
+    "Name": "Hero Electric Optima HX Dual Battery.png",
+    "Parent": "Hero Electric"
+  },
+  {
+    "Name": "Hero Electric Optima HX Single Battery.png",
+    "Parent": "Hero Electric"
+  },
+  {
+    "Name": "Hero Electric Photon LP.png",
+    "Parent": "Hero Electric"
+  },
+  {
+    "Name": "Hero MotoCorp V1.png",
+    "Parent": "Hero MotoCorp (Vida)"
+  },
+  {
+    "Name": "Hop Electric Leo Extended.png",
+    "Parent": "Hop Electric"
+  },
+  {
+    "Name": "Hop Electric Leo Standard.png",
+    "Parent": "Hop Electric"
+  },
+  {
+    "Name": "Hop Electric Lyf Extended.png",
+    "Parent": "Hop Electric"
+  },
+  {
+    "Name": "Hop Electric Lyf Standard.png",
+    "Parent": "Hop Electric"
+  },
+  {
+    "Name": "Hop Electric Oxo standard.png",
+    "Parent": "Hop Electric"
+  },
+  {
+    "Name": "Hop Electric Oxo X.png",
+    "Parent": "Hop Electric"
+  },
+  {
+    "Name": "iVoomi Energy jeet X Standard.png",
+    "Parent": "iVoomi Energy"
+  },
+  {
+    "Name": "iVoomi Energy jeet X ZE.png",
+    "Parent": "iVoomi Energy"
+  },
+  {
+    "Name": "iVoomi Energy S1 2.0 Eco.png",
+    "Parent": "iVoomi Energy"
+  },
+  {
+    "Name": "iVoomi Energy S1 Standard.png",
+    "Parent": "iVoomi Energy"
+  },
+  {
+    "Name": "joy E-Bike Beast Standard.png",
+    "Parent": "Joy E-Bike (Wardwizard)"
+  },
+  {
+    "Name": "joy E-Bike E-Monstar.png",
+    "Parent": "Joy E-Bike (Wardwizard)"
+  },
+  {
+    "Name": "joy E-Bike Gen Next Nanu Standard.png",
+    "Parent": "Joy E-Bike (Wardwizard)"
+  },
+  {
+    "Name": "joy E-Bike Gen Next Nanu+ Eco.png",
+    "Parent": "Joy E-Bike (Wardwizard)"
+  },
+  {
+    "Name": "Joy E-Bike Mihos.png",
+    "Parent": "Joy E-Bike (Wardwizard)"
+  },
+  {
+    "Name": "joy E-Bike Skyline.png",
+    "Parent": "Joy E-Bike (Wardwizard)"
+  },
+  {
+    "Name": "joy E-Bike Thunderboltt Hurricane.png",
+    "Parent": "Joy E-Bike (Wardwizard)"
+  },
+  {
+    "Name": "joy E-Bike Thunderboltt standard.png",
+    "Parent": "Joy E-Bike (Wardwizard)"
+  },
+  {
+    "Name": "Joy E-Bike Wolf+ Eco.png",
+    "Parent": "Joy E-Bike (Wardwizard)"
+  },
+  {
+    "Name": "Joy E-Bike Wolf+ Standard.png",
+    "Parent": "Joy E-Bike (Wardwizard)"
+  },
+  {
+    "Name": "Kabira Mobility Hermes 75 B2B Commercial.png",
+    "Parent": "Kabira Mobility"
+  },
+  {
+    "Name": "Kabira Mobility km 3000 Standard.png",
+    "Parent": "Kabira Mobility"
+  },
+  {
+    "Name": "Kabira Mobility km 3000 V2.png",
+    "Parent": "Kabira Mobility"
+  },
+  {
+    "Name": "Kabira Mobility km 4000 Standard.png",
+    "Parent": "Kabira Mobility"
+  },
+  {
+    "Name": "Kabira Mobility km 4000 V2.png",
+    "Parent": "Kabira Mobility"
+  },
+  {
+    "Name": "Komaki DT 3000.png",
+    "Parent": "Komaki"
+  },
+  {
+    "Name": "Komaki Flora Standard.png",
+    "Parent": "Komaki"
+  },
+  {
+    "Name": "Komaki LY Standard.png",
+    "Parent": "Komaki"
+  },
+  {
+    "Name": "Komaki MX3 Standard.png",
+    "Parent": "Komaki"
+  },
+  {
+    "Name": "Komaki Ranger Standard.png",
+    "Parent": "Komaki"
+  },
+  {
+    "Name": "Komaki Ranger XE.png",
+    "Parent": "Komaki"
+  },
+  {
+    "Name": "Komaki SE Deluxe.png",
+    "Parent": "Komaki"
+  },
+  {
+    "Name": "Komaki SE Eco.png",
+    "Parent": "Komaki"
+  },
+  {
+    "Name": "Komaki SE Sport.png",
+    "Parent": "Komaki"
+  },
+  {
+    "Name": "Komaki XGT Classic Standard.png",
+    "Parent": "Komaki"
+  },
+  {
+    "Name": "Komaki XGT KM Standard.png",
+    "Parent": "Komaki"
+  },
+  {
+    "Name": "Komaki XGT X One Standard.png",
+    "Parent": "Komaki"
+  },
+  {
+    "Name": "Kridn Standard.png",
+    "Parent": "Kridn (One Electric)"
+  },
+  {
+    "Name": "Lectrix EV LXS G2.0.png",
+    "Parent": "Lectrix EV"
+  },
+  {
+    "Name": "Lectrix EV LXS G3.0.png",
+    "Parent": "Lectrix EV"
+  },
+  {
+    "Name": "Lectrix EV LXS Standard.png",
+    "Parent": "Lectrix EV"
+  },
+  {
+    "Name": "Lectrix EV85 Standard.png",
+    "Parent": "Lectrix EV"
+  },
+  {
+    "Name": "Matter Motor AERA.png",
+    "Parent": "Matter Motor"
+  },
+  {
+    "Name": "Oben Electric Rorr EZ 2.6 kWh.png",
+    "Parent": "Oben Electric"
+  },
+  {
+    "Name": "Oben Electric Rorr EZ 3.4 kWh.png",
+    "Parent": "Oben Electric"
+  },
+  {
+    "Name": "Oben Electric Rorr EZ 4.4 kWh.png",
+    "Parent": "Oben Electric"
+  },
+  {
+    "Name": "Oben Electric Rorr Standard.png",
+    "Parent": "Oben Electric"
+  },
+  {
+    "Name": "odysse electric E2Go Plus Lithium.png",
+    "Parent": "Odysse Electric"
+  },
+  {
+    "Name": "odysse electric E2Go Standard.png",
+    "Parent": "Odysse Electric"
+  },
+  {
+    "Name": "Odysse Electric Evoqis Standard.png",
+    "Parent": "Odysse Electric"
+  },
+  {
+    "Name": "odysse electric hawk standard.png",
+    "Parent": "Odysse Electric"
+  },
+  {
+    "Name": "odysse electric hawk+ standard.png",
+    "Parent": "Odysse Electric"
+  },
+  {
+    "Name": "Odysse Electric Vader.png",
+    "Parent": "Odysse Electric"
+  },
+  {
+    "Name": "Okaya EV ClassIQ Standard.png",
+    "Parent": "Okaya EV"
+  },
+  {
+    "Name": "Okaya EV Faast F2B.png",
+    "Parent": "Okaya EV"
+  },
+  {
+    "Name": "Okaya EV Faast F2F.png",
+    "Parent": "Okaya EV"
+  },
+  {
+    "Name": "Okaya EV Faast F2T.png",
+    "Parent": "Okaya EV"
+  },
+  {
+    "Name": "Okaya EV Faast F3.png",
+    "Parent": "Okaya EV"
+  },
+  {
+    "Name": "Okaya EV Faast.png",
+    "Parent": "Okaya EV"
+  },
+  {
+    "Name": "Okaya EV Ferrato Disruptor.png",
+    "Parent": "Okaya EV"
+  },
+  {
+    "Name": "Okaya EV Freedom standard.png",
+    "Parent": "Okaya EV"
+  },
+  {
+    "Name": "Okinawa Autotech Cruiser Standard.png",
+    "Parent": "Okinawa Autotech"
+  },
+  {
+    "Name": "Okinawa Autotech Dual 100.png",
+    "Parent": "Okinawa Autotech"
+  },
+  {
+    "Name": "Okinawa Autotech IPraise+.png",
+    "Parent": "Okinawa Autotech"
+  },
+  {
+    "Name": "Okinawa Autotech Lite.png",
+    "Parent": "Okinawa Autotech"
+  },
+  {
+    "Name": "Okinawa Autotech PraisePro.png",
+    "Parent": "Okinawa Autotech"
+  },
+  {
+    "Name": "Okinawa Autotech R30 Standard.png",
+    "Parent": "Okinawa Autotech"
+  },
+  {
+    "Name": "Okinawa Autotech Ridge+ Eco.png",
+    "Parent": "Okinawa Autotech"
+  },
+  {
+    "Name": "Okinawa Autotech Ridge+.png",
+    "Parent": "Okinawa Autotech"
+  },
+  {
+    "Name": "Ola Electric S1 Air.png",
+    "Parent": "Ola Electric"
+  },
+  {
+    "Name": "Ola Electric S1 Pro Standard.png",
+    "Parent": "Ola Electric"
+  },
+  {
+    "Name": "Ola Electric S1 Pro.png",
+    "Parent": "Ola Electric"
+  },
+  {
+    "Name": "Ola Electric S1 Standard.png",
+    "Parent": "Ola Electric"
+  },
+  {
+    "Name": "Ola Electric S1X+.png",
+    "Parent": "Ola Electric"
+  },
+  {
+    "Name": "Pure EV ecoDryft 350.png",
+    "Parent": "Pure EV"
+  },
+  {
+    "Name": "Pure EV ecoDryft standard.png",
+    "Parent": "Pure EV"
+  },
+  {
+    "Name": "Pure EV ePluto 7G CX.png",
+    "Parent": "Pure EV"
+  },
+  {
+    "Name": "Pure EV ePluto 7G Max.png",
+    "Parent": "Pure EV"
+  },
+  {
+    "Name": "Pure EV ePluto 7G Standard.png",
+    "Parent": "Pure EV"
+  },
+  {
+    "Name": "Pure EV eTryst X standard.png",
+    "Parent": "Pure EV"
+  },
+  {
+    "Name": "Quantum Energy Bziness Commercial B2B.png",
+    "Parent": "Quantum Energy"
+  },
+  {
+    "Name": "Quantum Energy Elektron Standard.png",
+    "Parent": "Quantum Energy"
+  },
+  {
+    "Name": "Quantum Energy Milan Standard.png",
+    "Parent": "Quantum Energy"
+  },
+  {
+    "Name": "Quantum Energy Plasma Standard.png",
+    "Parent": "Quantum Energy"
+  },
+  {
+    "Name": "Raft Motors Indus Standrad.png",
+    "Parent": "Raft Motors"
+  },
+  {
+    "Name": "Raft Motors Teesta Standrad.png",
+    "Parent": "Raft Motors"
+  },
+  {
+    "Name": "Raft Motors Warrior Standrad.png",
+    "Parent": "Raft Motors"
+  },
+  {
+    "Name": "Revolt Motors RV1.png",
+    "Parent": "Revolt Motors"
+  },
+  {
+    "Name": "Revolt Motors RV400.png",
+    "Parent": "Revolt Motors"
+  },
+  {
+    "Name": "Rowwet Rame Standard.png",
+    "Parent": "Rowwet"
+  },
+  {
+    "Name": "Rowwet Vegatron Standard.png",
+    "Parent": "Rowwet"
+  },
+  {
+    "Name": "Rowwet Zepop Standard.png",
+    "Parent": "Rowwet"
+  },
+  {
+    "Name": "SuperEco T1.png",
+    "Parent": "Super Eco"
+  },
+  {
+    "Name": "SuperEco T2.png",
+    "Parent": "Super Eco"
+  },
+  {
+    "Name": "Techo Electra Emerge Standard.png",
+    "Parent": "Techo Electra"
+  },
+  {
+    "Name": "Techo Electra Neo Standard.png",
+    "Parent": "Techo Electra"
+  },
+  {
+    "Name": "Techo Electra Raptor Standard.png",
+    "Parent": "Techo Electra"
+  },
+  {
+    "Name": "Techo Electra Saathi Standard.png",
+    "Parent": "Techo Electra"
+  },
+  {
+    "Name": "Tork Motors kratos.png",
+    "Parent": "Tork Motors"
+  },
+  {
+    "Name": "Tunwal E-Motors E-Bike Sport.png",
+    "Parent": "Tunwal E-Motors"
+  },
+  {
+    "Name": "Tunwal E-Motors Lithium Smart Standard.png",
+    "Parent": "Tunwal E-Motors"
+  },
+  {
+    "Name": "Tunwal E-Motors Roma 13 Standard.png",
+    "Parent": "Tunwal E-Motors"
+  },
+  {
+    "Name": "Tunwal E-Motors Storm ZX Standard.png",
+    "Parent": "Tunwal E-Motors"
+  },
+  {
+    "Name": "Tunwal E-Motors T 133 Standard.png",
+    "Parent": "Tunwal E-Motors"
+  },
+  {
+    "Name": "TVS Motor iQube.png",
+    "Parent": "TVS Motor"
+  },
+  {
+    "Name": "TVS Motor X.png",
+    "Parent": "TVS Motor"
+  },
+  {
+    "Name": "Ultraviolette F77.png",
+    "Parent": "Ultraviolette"
+  },
+  {
+    "Name": "Vmoto Soco CPx.png",
+    "Parent": "Vmoto Soco"
+  },
+  {
+    "Name": "Vmoto Soco CUx.png",
+    "Parent": "Vmoto Soco"
+  },
+  {
+    "Name": "Vmoto Soco TC Max.png",
+    "Parent": "Vmoto Soco"
+  },
+  {
+    "Name": "Vmoto Soco TSX.png",
+    "Parent": "Vmoto Soco"
+  },
+  {
+    "Name": "Rivo Electric Cruiser Standard.png",
+    "Parent": "Yo Bykes"
+  },
+  {
+    "Name": "yo bykes Drift Standard.png",
+    "Parent": "Yo Bykes"
+  },
+  {
+    "Name": "yo bykes Edge Standard.png",
+    "Parent": "Yo Bykes"
+  },
+  {
+    "Name": "yo bykes electron standard.png",
+    "Parent": "Yo Bykes"
+  },
+  {
+    "Name": "yo bykes Trust Standard.png",
+    "Parent": "Yo Bykes"
+  },
+  {
+    "Name": "Zelio Ebikes Eeva Pro Standard.png",
+    "Parent": "zelio Ebikes"
+  },
+  {
+    "Name": "Zelio Ebikes Gracy Pro Standard.png",
+    "Parent": "zelio Ebikes"
+  },
+  {
+    "Name": "Zelio Ebikes Logix Standard.png",
+    "Parent": "zelio Ebikes"
+  },
+  {
+    "Name": "Zelio Ebikes Mystery Standard.png",
+    "Parent": "zelio Ebikes"
+  }
+]
