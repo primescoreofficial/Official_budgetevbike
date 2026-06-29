@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import 'leaflet/dist/leaflet.css';
 
-// Client-side mapping elements wrapper (Next.js SSR protection)
 const MapContainerComponent = dynamic(() => import('react-leaflet').then((mod) => mod.MapContainer), { ssr: false });
 const TileLayerComponent = dynamic(() => import('react-leaflet').then((mod) => mod.TileLayer), { ssr: false });
 const MarkerComponent = dynamic(() => import('react-leaflet').then((mod) => mod.Marker), { ssr: false });
@@ -21,7 +20,7 @@ interface Station {
 
 export default function ChargingStationsPage() {
     const [stations, setStations] = useState<Station[]>([]);
-    const [mapCenter, setMapCenter] = useState<[number, number]>([20.5937, 78.9629]); // Map center set to middle of India
+    const [mapCenter, setMapCenter] = useState<[number, number]>([20.5937, 78.9629]); // India Center
     const [map, setMap] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [isClient, setIsClient] = useState(false);
@@ -29,7 +28,6 @@ export default function ChargingStationsPage() {
     useEffect(() => {
         setIsClient(true);
 
-        // Fix leaflet default markers linkage in Next.js bundle framework
         import('leaflet').then((L) => {
             delete (L.Icon.Default.prototype as any)._getIconUrl;
             L.Icon.Default.mergeOptions({
@@ -39,13 +37,10 @@ export default function ChargingStationsPage() {
             });
         });
 
-        // 📡 DYNAMIC GEOSPATIAL API STREAM
         const loadAllIndiaEVStations = async () => {
             try {
                 setLoading(true);
 
-                // 🔍 Overpass QL Query: Searches entire India border geometry for charging stations
-                // Timeout set to 50s and limited to 80 results to keep loading fast
                 const query = `
           [out:json][timeout:50];
           area["ISO3166-1"="IN"] -> .india;
@@ -55,7 +50,9 @@ export default function ChargingStationsPage() {
           out body 80;
         `;
 
-                const apiEndpoint = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
+                // 🔑 Yahan humne dynamic base URL uthaya hai .env file se
+                const baseUrl = process.env.NEXT_PUBLIC_OVERPASS_API_URL || 'https://overpass-api.de/api/interpreter';
+                const apiEndpoint = `${baseUrl}?data=${encodeURIComponent(query)}`;
 
                 const response = await fetch(apiEndpoint, { method: 'GET' });
                 if (!response.ok) throw new Error("Global cluster network response issue");
@@ -89,13 +86,13 @@ export default function ChargingStationsPage() {
     const handleViewOnMap = (station: Station) => {
         setMapCenter(station.position);
         if (map) {
-            map.setView(station.position, 14); // Automatically focus on selected Indian node
+            map.setView(station.position, 14);
         }
     };
 
     return (
         <div className="min-h-screen bg-[#0d0d0d] text-white font-sans">
-            {/* EV.BIKE Navbar layout structure */}
+            {/* EV.BIKE Navbar */}
             <nav className="flex justify-between items-center px-8 py-4 border-b border-neutral-900 bg-[#0d0d0d]">
                 <div className="flex items-center gap-2">
                     <span className="text-[#79b947] text-2xl font-black tracking-tighter">⚡ EV.BIKE</span>
@@ -110,21 +107,20 @@ export default function ChargingStationsPage() {
             </nav>
 
             <div className="p-6">
-                {/* Header Segment */}
+                {/* Header */}
                 <div className="mb-6">
-                    <span className="text-xs font-bold text-[#79b947] uppercase tracking-widest">// PAN INDIA LIVE STREAM</span>
+                    <span className="text-xs font-bold text-[#79b947] uppercase tracking-widest">// PAN INDIA LIVE STREAM (.ENV)</span>
                     <h1 className="text-3xl font-extrabold mt-1 text-neutral-100">National EV Infrastructure Map</h1>
-                    <p className="text-neutral-400 text-xs mt-1">Live data pipelines pulling charging hubs from Delhi, Mumbai, Bangalore, Jaipur & national grids.</p>
+                    <p className="text-neutral-400 text-xs mt-1">Data pipeline successfully route handled via isolated architecture variables.</p>
                 </div>
 
-                {/* Workspace Matrix */}
+                {/* Layout Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-220px)] min-h-[550px]">
 
-                    {/* Left Block: National Scale Map Layer */}
+                    {/* Map View */}
                     <div className="lg:col-span-8 bg-[#141414] border border-neutral-800/80 rounded-2xl overflow-hidden relative z-10">
                         {isClient && !loading ? (
                             <MapContainerComponent center={mapCenter} zoom={5} style={{ width: '100%', height: '100%' }} ref={setMap}>
-                                {/* Free Dark Theme Grid Skin */}
                                 <TileLayerComponent
                                     url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                                     attribution='&copy; OpenStreetMap contributors'
@@ -143,12 +139,12 @@ export default function ChargingStationsPage() {
                         ) : (
                             <div className="w-full h-full flex flex-col items-center justify-center text-neutral-500 gap-2 bg-[#141414]">
                                 <div className="w-6 h-6 border-2 border-[#79b947] border-t-transparent rounded-full animate-spin"></div>
-                                <p className="text-[10px] tracking-widest uppercase">Connecting to Indian Registry Core...</p>
+                                <p className="text-[10px] tracking-widest uppercase">Connecting via secure pipeline...</p>
                             </div>
                         )}
                     </div>
 
-                    {/* Right Block: Live Registry Feed Sidebar */}
+                    {/* Sidebar */}
                     <div className="lg:col-span-4 bg-[#141414] border border-neutral-800/80 rounded-2xl p-4 flex flex-col overflow-hidden">
                         <h2 className="text-sm font-bold text-neutral-400 tracking-wider mb-4 uppercase">// Active Live Nodes ({stations.length})</h2>
 
