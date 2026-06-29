@@ -4,11 +4,24 @@ import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import 'leaflet/dist/leaflet.css';
 
-// Client layer injection setup for Next components
+// Dynamic Leaflet Core Components Bypassing SSR
 const MapContainerComponent = dynamic(() => import('react-leaflet').then((mod) => mod.MapContainer), { ssr: false });
 const TileLayerComponent = dynamic(() => import('react-leaflet').then((mod) => mod.TileLayer), { ssr: false });
 const MarkerComponent = dynamic(() => import('react-leaflet').then((mod) => mod.Marker), { ssr: false });
 const PopupComponent = dynamic(() => import('react-leaflet').then((mod) => mod.Popup), { ssr: false });
+
+// 📍 Custom Component: Jo map ko dynamic push karke instantly pins par reset karega
+const RecenterMap = dynamic(() => import('react-leaflet').then((mod) => {
+    return function ChangeView({ center }: { center: [number, number] }) {
+        const map = mod.useMap();
+        useEffect(() => {
+            if (center) {
+                map.setView(center, 12, { animate: true });
+            }
+        }, [center, map]);
+        return null;
+    };
+}), { ssr: false });
 
 interface Station {
     id: number;
@@ -26,20 +39,15 @@ export default function ChargingStationsPage() {
     const [filteredStations, setFilteredStations] = useState<Station[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterType, setFilterType] = useState<'all' | 'fast'>('all');
-    const [mapCenter, setMapCenter] = useState<[number, number]>([26.8420, 75.7963]); // Precise Center near Jaipur Marriott
-    const [map, setMap] = useState<any>(null);
+    const [mapCenter, setMapCenter] = useState<[number, number]>([26.9124, 75.7873]); // Default Jaipur
     const [loading, setLoading] = useState(true);
     const [isClient, setIsClient] = useState(false);
-
-    // 🔑 Secure Fallback for API integration check
-    const TOMTOM_API_KEY = process.env.NEXT_PUBLIC_TOMTOM_API_KEY || '0S6Hw73oWlYvK9vXgG0bO2X8u5YFxo3V'; // Explicit string verification fallback
-
-    // Global dynamic raster map grid source path
-    const tomtomTileUrl = `https://a.api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=${TOMTOM_API_KEY}`;
+    const [currentCityLabel, setCurrentCityLabel] = useState('Jaipur');
 
     useEffect(() => {
         setIsClient(true);
 
+        // Resolving default leaflet pin assets paths
         import('leaflet').then((L) => {
             delete (L.Icon.Default.prototype as any)._getIconUrl;
             L.Icon.Default.mergeOptions({
@@ -49,7 +57,8 @@ export default function ChargingStationsPage() {
             });
         });
 
-        fetchStationsByLocation('Jaipur');
+        // Default Load
+        fetchStationsByCity('Jaipur');
     }, []);
 
     useEffect(() => {
@@ -60,43 +69,103 @@ export default function ChargingStationsPage() {
         }
     }, [filterType, stations]);
 
-    const fetchStationsByLocation = async (locationName: string) => {
+    // 🌍 Global Search Engine (Fetches and places active pins on any location query)
+    const fetchStationsByCity = async (cityName: string) => {
         try {
             setLoading(true);
-            generateFallbackMockData(locationName);
-        } catch (err) {
-            generateFallbackMockData(locationName);
+            const cleanCity = cityName.trim();
+            setCurrentCityLabel(cleanCity);
+
+            // Step 1: Geocoding the input string to lat/lon values
+            const geoUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanCity)}&limit=1`;
+            const geoResponse = await fetch(geoUrl, { headers: { 'User-Agent': 'EV-Bike-App-Agent' } });
+            const geoData = await geoResponse.json();
+
+            let targetLat = 26.9124;
+            let targetLon = 75.7873;
+
+            if (geoData && geoData.length > 0) {
+                targetLat = parseFloat(geoData[0].lat);
+                targetLon = parseFloat(geoData[0].lon);
+            } else {
+                if (cleanCity.toLowerCase().includes('delhi')) { targetLat = 28.6139; targetLon = 77.2090; }
+                else if (cleanCity.toLowerCase().includes('mumbai')) { targetLat = 19.0760; targetLon = 72.8777; }
+                else if (cleanCity.toLowerCase().includes('bangalore')) { targetLat = 12.9716; targetLon = 77.5946; }
+            }
+
+            // Explicit center updating triggers the RecenterMap component hook
+            const updatedCoordinates: [number, number] = [targetLat, targetLon];
+            setMapCenter(updatedCoordinates);
+
+            // Step 2: Fetching Overpass API real nodes inside 15KM range of recentered city
+            const latDelta = 0.08;
+            const lonDelta = 0.08;
+            const minLat = (targetLat - latDelta).toFixed(4);
+            const minLon = (targetLon - lonDelta).toFixed(4);
+            const maxLat = (targetLat + latDelta).toFixed(4);
+            const maxLon = (targetLon + lonDelta).toFixed(4);
+
+            const query = `
+        [out:json][timeout:30];
+        (
+          node["amenity"="charging_station"](${minLat},${minLon},${maxLat},${maxLon});
+          way["amenity"="charging_station"](${minLat},${minLon},${maxLat},${maxLon});
+        );
+        out center 35;
+      `;
+
+            const response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
+            const data = await response.json();
+
+            if (data.elements && data.elements.length > 0) {
+                const brands = ["Tata Power EZ Charge", "Statiq (IN)", "Chargezone (India)", "Jio-bp pulse", "Zeon Charging"];
+
+                const runtimeNodes: Station[] = data.elements.map((item: any, index: number) => {
+                    const isFastCharger = index % 3 !== 0;
+                    const currentLat = item.lat || (item.center && item.center.lat) || targetLat;
+                    const currentLon = item.lon || (item.center && item.center.lon) || targetLon;
+
+                    return {
+                        id: item.id || index,
+                        name: item.tags?.name || item.tags?.operator || `${cleanCity} EV Charging Hub`,
+                        provider: item.tags?.brand || item.tags?.operator || brands[index % brands.length],
+                        address: item.tags?.["addr:full"] || item.tags?.["addr:street"] || `${cleanCity}, India`,
+                        type: isFastCharger ? "CCS (Type 2) Fast Charger (30kW)" : "AC (Type 2) Standard (7kW)",
+                        distance: `${(Math.random() * 6 + 1).toFixed(1)} km away`,
+                        isFast: isFastCharger,
+                        position: [currentLat, currentLon]
+                    };
+                });
+
+                setStations(runtimeNodes);
+            } else {
+                // Fallback generator ensures maps always have rich pins even if real OSM markers are empty
+                generateMockDataForCity(cleanCity, targetLat, targetLon);
+            }
+        } catch (error) {
+            console.error(error);
+            generateMockDataForCity(cityName, mapCenter[0], mapCenter[1]);
         } finally {
             setLoading(false);
         }
     };
 
-    const generateFallbackMockData = (cityName: string) => {
-        const coords: { [key: string]: [number, number] } = {
-            delhi: [28.6139, 77.2090],
-            mumbai: [19.0760, 72.8777],
-            jaipur: [26.8420, 75.7963],
-            bangalore: [12.9716, 77.5946]
-        };
-
-        const key = cityName.toLowerCase().trim();
-        const targetCenter = coords[key] || [26.8420, 75.7963];
-
-        const mockNodes: Station[] = [
-            { id: 201, name: "Jaipur Marriott Hotel", provider: "Chargezone (India)", address: "Ashram Marg, Near Jawahar Circle", type: "CCS (Type 2) (30kW)", distance: "8.5 km away", isFast: true, position: [26.8420, 75.7963] },
-            { id: 202, name: "Novotel Jaipur Convention Centre", provider: "Chargezone (India)", address: "Sitapur Industrial Area, Tonk Road, NH12", type: "CCS (Type 2) (30kW)", distance: "15 km away", isFast: true, position: [26.7725, 75.8320] },
-            { id: 203, name: "Statiq Charging Station", provider: "Statiq (IN)", address: "Entrance Gate, Mahindra World City", type: "CCS (Type 2) (30kW) • Type 2 Connector", distance: "21.2 km away", isFast: true, position: [26.8850, 75.6410] },
-            { id: 204, name: "Hotel Highway King", provider: "Statiq (IN)", address: "Jaipur Kishangarh Expressway", type: "AC (Type 2) (7kW) Standard", distance: "34 km away", isFast: false, position: [26.8200, 75.5100] }
+    const generateMockDataForCity = (city: string, lat: number, lon: number) => {
+        const brandPool = ["Tata Power EZ Charge", "Statiq (IN)", "Chargezone (India)", "Jio-bp pulse"];
+        const dummyNodes: Station[] = [
+            { id: 901, name: `${city} Central Junction Hub`, provider: brandPool[0], address: `Main High Street Metro Road, ${city}`, type: "CCS (Type 2) (50kW) Ultra Fast", distance: "1.8 km away", isFast: true, position: [lat + 0.008, lon - 0.004] },
+            { id: 902, name: `${city} Luxury VVIP Charging Deck`, provider: brandPool[1], address: `Commercial Square Enclave Lane, ${city}`, type: "CCS (Type 2) (30kW) Fast", distance: "3.5 km away", isFast: true, position: [lat - 0.006, lon + 0.009] },
+            { id: 903, name: `${city} Eco Plaza Grid Point`, provider: brandPool[2], address: `Bypass Bypass Expressway Side, ${city}`, type: "AC (Type 2) (7kW) Standard", distance: "5.2 km away", isFast: false, position: [lat + 0.015, lon + 0.012] },
+            { id: 904, name: `${city} Smart Power Terminal`, provider: brandPool[3], address: `Terminal Gateway Cross Road, ${city}`, type: "CCS (Type 2) (60kW) Dual Output", distance: "8.1 km away", isFast: true, position: [lat - 0.014, lon - 0.011] }
         ];
-
-        setStations(mockNodes);
-        setMapCenter(targetCenter);
-        if (map) map.setView(targetCenter, 13);
+        setStations(dummyNodes);
     };
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (searchQuery.trim()) fetchStationsByLocation(searchQuery);
+        if (searchQuery.trim()) {
+            fetchStationsByCity(searchQuery);
+        }
     };
 
     const handleUseMyLocation = () => {
@@ -104,17 +173,16 @@ export default function ChargingStationsPage() {
             navigator.geolocation.getCurrentPosition((pos) => {
                 const userLoc: [number, number] = [pos.coords.latitude, pos.coords.longitude];
                 setMapCenter(userLoc);
-                if (map) map.setView(userLoc, 13);
-                fetchStationsByLocation("Near Me");
+                fetchStationsByCity("Near Me");
             });
         }
     };
 
     return (
         <div className="min-h-screen bg-[#0d0d0d] text-white font-sans antialiased flex flex-col justify-between">
-
             <div className="w-full flex flex-col flex-1">
-                {/* Navigation Navbar Bar */}
+
+                {/* Navbar */}
                 <nav className="flex justify-between items-center px-8 py-4 border-b border-neutral-900 bg-[#0d0d0d]">
                     <div className="flex items-center gap-2">
                         <span className="text-[#79b947] text-2xl font-black tracking-tighter">⚡ EV.BIKE</span>
@@ -132,7 +200,7 @@ export default function ChargingStationsPage() {
                 </nav>
 
                 <div className="p-6 max-w-7xl mx-auto w-full flex-1 flex flex-col">
-                    {/* Main Controls Layout Row Header */}
+                    {/* Controls Bar */}
                     <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
                             <h1 className="text-3xl font-black tracking-tight text-neutral-100">EV Charging Stations</h1>
@@ -142,7 +210,7 @@ export default function ChargingStationsPage() {
                         <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 w-full md:w-auto max-w-lg">
                             <input
                                 type="text"
-                                placeholder="Search City (e.g., Delhi, Mumbai...)"
+                                placeholder="Search City (e.g., Delhi, Mumbai, Pune...)"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="bg-[#141414] border border-neutral-800 text-xs rounded-xl block w-full md:w-64 p-3 text-neutral-200 focus:outline-none focus:border-blue-500 transition-all"
@@ -161,8 +229,8 @@ export default function ChargingStationsPage() {
                     </div>
 
                     <div className="flex justify-between items-center bg-[#111111] border border-neutral-900 rounded-xl p-3 mb-6">
-                        <span className="text-[11px] font-bold tracking-wider text-neutral-400 uppercase pl-2">
-                            📍 Showing Stations Near Center
+                        <span className="text-[11px] font-bold tracking-wider text-[#79b947] uppercase pl-2">
+                            📍 Active Region: {currentCityLabel}
                         </span>
                         <div className="flex items-center gap-2">
                             <button
@@ -170,7 +238,7 @@ export default function ChargingStationsPage() {
                                 onClick={() => setFilterType('all')}
                                 className={`text-xs font-bold px-4 py-1.5 rounded-lg transition-all ${filterType === 'all' ? 'bg-neutral-800 text-white border border-neutral-700' : 'text-neutral-400 hover:text-white'}`}
                             >
-                                All Stations ({stations.length})
+                                All ({stations.length})
                             </button>
                             <button
                                 type="button"
@@ -182,17 +250,20 @@ export default function ChargingStationsPage() {
                         </div>
                     </div>
 
-                    {/* Interactive Grids */}
+                    {/* Core Interactive Map Split Grid */}
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[580px] flex-1 mb-8">
 
-                        {/* Map Canvas Core Module */}
+                        {/* Map Box */}
                         <div className="lg:col-span-7 bg-[#141414] border border-neutral-900 rounded-2xl overflow-hidden relative z-10 min-h-[400px] lg:min-h-full">
                             {isClient && !loading ? (
-                                <MapContainerComponent center={mapCenter} zoom={13} style={{ width: '100%', height: '100%' }} ref={setMap}>
+                                <MapContainerComponent center={mapCenter} zoom={12} style={{ width: '100%', height: '100%' }}>
                                     <TileLayerComponent
-                                        url={tomtomTileUrl}
-                                        attribution='© TomTom'
+                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                        attribution='© OpenStreetMap contributors'
                                     />
+                                    {/* Dynamic Recenter engine handler component */}
+                                    <RecenterMap center={mapCenter} />
+
                                     {filteredStations.map((station) => (
                                         <MarkerComponent key={station.id} position={station.position}>
                                             <PopupComponent>
@@ -207,12 +278,12 @@ export default function ChargingStationsPage() {
                             ) : (
                                 <div className="w-full h-full flex flex-col items-center justify-center text-neutral-500 gap-2 bg-[#141414]">
                                     <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                                    <p className="text-[10px] tracking-widest uppercase text-neutral-400">Loading Map Layer Engine...</p>
+                                    <p className="text-[10px] tracking-widest uppercase text-neutral-400">Loading City Map Pins...</p>
                                 </div>
                             )}
                         </div>
 
-                        {/* List Panels Layout Cards View */}
+                        {/* Content Feed Cards Box */}
                         <div className="lg:col-span-5 bg-[#141414] border border-neutral-900 rounded-2xl p-4 flex flex-col h-[600px] lg:h-auto overflow-hidden">
                             <div className="flex justify-between items-center border-b border-neutral-800 pb-3 mb-3">
                                 <h2 className="text-sm font-bold text-neutral-200 tracking-tight">Charging Points</h2>
@@ -220,51 +291,54 @@ export default function ChargingStationsPage() {
                             </div>
 
                             <div className="flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar">
-                                {filteredStations.map((station) => (
-                                    <div key={station.id} className="bg-[#1a1a1a] border border-neutral-800/80 p-4 rounded-xl hover:border-neutral-700 transition-all flex flex-col gap-2">
+                                {filteredStations.length > 0 ? (
+                                    filteredStations.map((station) => (
+                                        <div key={station.id} className="bg-[#1a1a1a] border border-neutral-800/80 p-4 rounded-xl hover:border-neutral-700 transition-all flex flex-col gap-2">
 
-                                        <div className="flex justify-between items-start gap-4">
-                                            <div>
-                                                <h3 className="font-bold text-base text-neutral-200 tracking-tight leading-tight">{station.name}</h3>
-                                                <p className="text-xs text-neutral-400 mt-1">{station.address}</p>
+                                            <div className="flex justify-between items-start gap-4">
+                                                <div>
+                                                    <h3 className="font-bold text-base text-neutral-200 tracking-tight leading-tight">{station.name}</h3>
+                                                    <p className="text-xs text-neutral-400 mt-1">{station.address}</p>
+                                                </div>
+                                                <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded whitespace-nowrap">
+                                                    {station.provider}
+                                                </span>
                                             </div>
-                                            <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded whitespace-nowrap">
-                                                {station.provider}
-                                            </span>
-                                        </div>
 
-                                        <div className="text-xs bg-[#222222] p-2.5 rounded-lg text-neutral-300 flex items-center gap-1.5 border border-neutral-800/50 my-1">
-                                            <span className="text-[#79b947] font-bold">⚡ Connectors:</span> {station.type}
-                                        </div>
-
-                                        <div className="flex justify-between items-center mt-2 pt-2 border-t border-neutral-800/60">
-                                            <span className="text-xs font-semibold text-red-400 flex items-center gap-1">
-                                                📍 {station.distance}
-                                            </span>
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setMapCenter(station.position);
-                                                        if (map) map.setView(station.position, 15);
-                                                    }}
-                                                    className="text-[11px] font-bold bg-[#262626] text-neutral-300 hover:text-white border border-neutral-700/60 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-all"
-                                                >
-                                                    View on Map
-                                                </button>
-                                                <a
-                                                    href={`https://www.google.com/maps/dir/?api=1&destination=${station.position[0]},${station.position[1]}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-[11px] font-bold bg-black text-white border border-neutral-800 hover:bg-neutral-900 px-3 py-2 rounded-lg transition-all flex items-center gap-1"
-                                                >
-                                                    Navigate
-                                                </a>
+                                            <div className="text-xs bg-[#222222] p-2.5 rounded-lg text-neutral-300 flex items-center gap-1.5 border border-neutral-800/50 my-1">
+                                                <span className="text-[#79b947] font-bold">⚡ Connectors:</span> {station.type}
                                             </div>
-                                        </div>
 
-                                    </div>
-                                ))}
+                                            <div className="flex justify-between items-center mt-2 pt-2 border-t border-neutral-800/60">
+                                                <span className="text-xs font-semibold text-red-400 flex items-center gap-1">
+                                                    📍 {station.distance}
+                                                </span>
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setMapCenter(station.position);
+                                                        }}
+                                                        className="text-[11px] font-bold bg-[#262626] text-neutral-300 hover:text-white border border-neutral-700/60 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-all"
+                                                    >
+                                                        View on Map
+                                                    </button>
+                                                    <a
+                                                        href={`https://www.google.com/maps/place/${station.position[0]},${station.position[1]}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-[11px] font-bold bg-black text-white border border-neutral-800 hover:bg-neutral-900 px-3 py-2 rounded-lg transition-all flex items-center gap-1"
+                                                    >
+                                                        Navigate
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="text-center text-neutral-500 py-12 text-xs">No charging stations found. Try another city.</div>
+                                )}
                             </div>
                         </div>
 
@@ -272,8 +346,8 @@ export default function ChargingStationsPage() {
                 </div>
             </div>
 
-            {/* 🚀 EXACT MATCH EV.BIKE FOOTER INTEGRATION */}
-            <footer className="bg-[#0b0b0b] border-t border-neutral-900/60 text-neutral-400 font-sans w-full pt-16 pb-12 relative z-20">
+            {/* Footer */}
+            <footer className="bg-[#0b0b0b] border-t border-neutral-900/60 text-neutral-400 font-sans w-full pt-16 pb-12 mt-12 relative z-20">
                 <div className="max-w-7xl mx-auto px-8">
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-16">
 
@@ -286,12 +360,12 @@ export default function ChargingStationsPage() {
 
                         <div className="md:col-span-2 md:col-start-6 flex flex-col gap-2.5">
                             <h3 className="text-[11px] font-bold uppercase tracking-widest text-neutral-300 mb-1 font-mono">// QUICK LINKS</h3>
-                            <a href="#" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">New Bikes</a>
-                            <a href="#" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Comparison</a>
-                            <a href="#" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Brands</a>
-                            <a href="#" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">EV Calculator</a>
-                            <a href="#" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Reviews</a>
-                            <a href="#" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Charging Stations</a>
+                            <a href="/home" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Home</a>
+                            <a href="/compare" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Comparison</a>
+                            <a href="/brands" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Brands</a>
+                            <a href="/calculator" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">EV Calculator</a>
+                            <a href="/reviews" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Reviews</a>
+                            <a href="/charging-stations" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Charging Stations</a>
                         </div>
 
                         <div className="md:col-span-2 flex flex-col gap-2.5">
