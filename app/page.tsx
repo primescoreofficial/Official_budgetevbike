@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { supabase, getBikeImageUrl } from '@/lib/supabase';
 import { ArrowRight, Plus, Zap, Gauge, BatteryCharging, Menu } from 'lucide-react';
+import Link from 'next/link';
 
 // TypeScript interfaces for database types
 interface ElectricBike {
@@ -335,9 +336,12 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <button className="w-full mt-auto py-2.5 bg-neutral-800 hover:bg-[#79b947] hover:text-black font-bold uppercase tracking-widest text-[10px] rounded-xl transition-all border border-neutral-700/50 hover:border-[#79b947]">
+                  <Link
+                    href={`/bike/${bike.id}`}
+                    className="w-full text-center mt-auto py-2.5 bg-neutral-800 hover:bg-[#79b947] hover:text-black transition-all rounded-xl text-xs font-bold font-mono text-neutral-200 block"
+                  >
                     Full Spec Sheet
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))}
