@@ -96,7 +96,7 @@ export default function BrandsPage() {
             <a href="/compare" className="text-neutral-400 hover:text-white transition-colors">Comparison</a>
             <a href="/brands" className="text-white border-b border-white/40 pb-0.5">Brands</a>
             <a href="/calculator" className="text-neutral-400 hover:text-white transition-colors">EV Calculator</a>
-            <a href="/reviews" className="text-neutral-400 hover:text-white transition-colors">Reviews</a>
+            <a href="/Find-EV" className="text-neutral-400 hover:text-white transition-colors">Find-EV</a>
             <a href="/charging-stations" className="text-neutral-400 hover:text-white transition-colors">Charging Stations</a>
           </nav>
 
@@ -206,7 +206,7 @@ export default function BrandsPage() {
               <li><a href="/compare" className="hover:text-[#79b947] transition-colors">Comparison</a></li>
               <li><a href="/brands" className="hover:text-[#79b947] transition-colors">Brands</a></li>
               <li><a href="/calculator" className="hover:text-[#79b947] transition-colors">EV Calculator</a></li>
-              <li><a href="/reviews" className="hover:text-[#79b947] transition-colors">Reviews</a></li>
+              <li><a href="/Find-EV" className="hover:text-[#79b947] transition-colors">Find-EV</a></li>
               <li><a href="/charging-stations" className="hover:text-[#79b947] transition-colors">Charging Stations</a></li>
             </ul>
           </div>

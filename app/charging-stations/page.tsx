@@ -188,15 +188,19 @@ export default function ChargingStationsPage() {
                         <span className="text-[#79b947] text-2xl font-black tracking-tighter">⚡ EV.BIKE</span>
                     </div>
                     <div className="hidden md:flex items-center gap-6 text-xs font-bold tracking-wider text-neutral-400 uppercase">
-                        <a href="#" className="hover:text-white transition-colors">Home</a>
-                        <a href="#" className="hover:text-white transition-colors">Comparison</a>
-                        <a href="#" className="hover:text-white transition-colors">Brands</a>
-                        <a href="#" className="hover:text-white transition-colors text-[#79b947]">EV Calculator</a>
-                        <a href="#" className="hover:text-white transition-colors">Reviews</a>
+                        <a href="/" className="hover:text-white transition-colors">Home</a>
+                        <a href="/compare" className="hover:text-white transition-colors">Comparison</a>
+                        <a href="/brands" className="hover:text-white transition-colors">Brands</a>
+                        <a href="/calculator" className="hover:text-white transition-colors text-[#79b947]">EV Calculator</a>
+                        <a href="/reviews" className="hover:text-white transition-colors">Reviews</a>
+                        <a href="/charging-stations" className="text-neutral-400 hover:text-white transition-colors">Charging Stations</a>
                     </div>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
+                    <a
+                        href="/Find-EV"
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-all text-center inline-block"
+                    >
                         Get Started
-                    </button>
+                    </a>
                 </nav>
 
                 <div className="p-6 max-w-7xl mx-auto w-full flex-1 flex flex-col">
@@ -351,6 +355,7 @@ export default function ChargingStationsPage() {
                 <div className="max-w-7xl mx-auto px-8">
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-16">
 
+                        {/* Brand Identity */}
                         <div className="md:col-span-4 flex flex-col gap-4">
                             <span className="text-[#79b947] text-2xl font-black tracking-tighter">EV.BIKE</span>
                             <p className="text-xs text-neutral-500 leading-relaxed max-w-xs">
@@ -358,32 +363,36 @@ export default function ChargingStationsPage() {
                             </p>
                         </div>
 
+                        {/* QUICK LINKS - Linked Perfectly */}
                         <div className="md:col-span-2 md:col-start-6 flex flex-col gap-2.5">
                             <h3 className="text-[11px] font-bold uppercase tracking-widest text-neutral-300 mb-1 font-mono">// QUICK LINKS</h3>
-                            <a href="/home" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Home</a>
-                            <a href="/compare" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Comparison</a>
+                            <a href="/new-bikes" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">New Bikes</a>
+                            <a href="/comparison" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Comparison</a>
                             <a href="/brands" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Brands</a>
-                            <a href="/calculator" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">EV Calculator</a>
+                            <a href="/ev-calculator" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">EV Calculator</a>
                             <a href="/reviews" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Reviews</a>
-                            <a href="/charging-stations" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Charging Stations</a>
+                            <a href="/charging-stations" className="text-xs text-white font-medium transition-colors w-fit border-b border-[#79b947]/30 pb-0.5">Charging Stations</a>
                         </div>
 
+                        {/* POPULAR BRANDS - Linked Perfectly */}
                         <div className="md:col-span-2 flex flex-col gap-2.5">
                             <h3 className="text-[11px] font-bold uppercase tracking-widest text-neutral-300 mb-1 font-mono">// POPULAR BRANDS</h3>
-                            <a href="#" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Revolt Motors</a>
-                            <a href="#" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Matter Energy</a>
-                            <a href="#" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Oben Electric</a>
-                            <a href="#" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Tork Motors</a>
+                            <a href="/brands/revolt-motors" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Revolt Motors</a>
+                            <a href="/brands/matter-energy" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Matter Energy</a>
+                            <a href="/brands/oben-electric" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Oben Electric</a>
+                            <a href="/brands/tork-motors" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Tork Motors</a>
                         </div>
 
+                        {/* CONTACT SUPPORT - Linked Perfectly */}
                         <div className="md:col-span-3 flex flex-col gap-2.5">
                             <h3 className="text-[11px] font-bold uppercase tracking-widest text-neutral-300 mb-1 font-mono">// CONTACT SUPPORT</h3>
-                            <p className="text-xs text-neutral-200 font-medium tracking-wide">+91 63505-71635</p>
+                            <a href="tel:+916350571635" className="text-xs text-neutral-200 font-medium tracking-wide hover:text-[#79b947] transition-colors w-fit">+91 63505-71635</a>
                             <a href="mailto:info@evbike.com" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">info@evbike.com</a>
                         </div>
 
                     </div>
 
+                    {/* Copyright & Info Block */}
                     <div className="border-t border-neutral-900/40 pt-8 flex flex-col md:flex-row justify-between items-center text-[10px] tracking-wider text-neutral-600 uppercase font-mono">
                         <p>© 2026 EV.BIKE MATRIX MEDIA. ALL RIGHTS RESERVED.</p>
                         <span className="text-[9px] text-neutral-700 font-sans tracking-normal lowercase italic mt-2 md:mt-0">made for EV revolution</span>

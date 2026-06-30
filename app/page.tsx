@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { supabase, getBikeImageUrl } from '@/lib/supabase';
 import { ArrowRight, Plus, Zap, Gauge, BatteryCharging, Menu } from 'lucide-react';
 
@@ -29,6 +29,13 @@ export default function Home() {
   const [selectedBudget, setSelectedBudget] = useState('Any Budget');
   const [selectedRange, setSelectedRange] = useState('Any Range');
 
+  // 🎲 Initial load par sirf 6 popular bikes dikhane ke liye logic
+  const displayedBikes = useMemo(() => {
+    if (filteredBikes && filteredBikes.length > 10) {
+      return filteredBikes.slice(0, 6); // 
+    }
+    return filteredBikes || []; // Filter select hone par strictly wahi dikhengi
+  }, [filteredBikes]);
   // Fetch data from Supabase
   useEffect(() => {
     async function fetchBikes() {
@@ -170,8 +177,8 @@ export default function Home() {
             <a href="/calculator" className="hover:text-[#aaff00] transition-colors font-extrabold text-neutral-300">
               EV Calculator
             </a>
-            <a href="/reviews" className="hover:text-white transition-colors">
-              Reviews
+            <a href="/Find-EV" className="hover:text-white transition-colors">
+              Find-EV
             </a>
             <a href="/charging-stations" className="hover:text-white transition-colors">
               Charging Stations
@@ -270,7 +277,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {filteredBikes.map((bike, idx) => (
+            {displayedBikes.map((bike, idx) => (
               <div key={bike.id || idx} className="group bg-neutral-900 border border-neutral-800/60 rounded-2xl overflow-hidden hover:border-neutral-700 transition-all duration-300 flex flex-col">
                 <div className="aspect-[16/10] bg-neutral-800 relative overflow-hidden">
                   <img
@@ -550,7 +557,7 @@ export default function Home() {
               <li><a href="/compare" className="hover:text-[#79b947]">Comparison</a></li>
               <li><a href="/brands" className="hover:text-[#79b947]">Brands</a></li>
               <li><a href="/calculator" className="hover:text-[#79b947]">EV Calculator</a></li>
-              <li><a href="/reviews" className="hover:text-[#79b947]">Reviews</a></li>
+              <li><a href="/Find-EV" className="hover:text-[#79b947]">Find-EV</a></li>
               <li><a href="/charging-stations" className="hover:text-[#79b947]">Charging Stations</a></li>
             </ul>
           </div>
@@ -580,8 +587,8 @@ export default function Home() {
             Made for India's EV revolution ⚡
           </div>
         </div>
-      </footer>
+      </footer >
 
-    </div>
+    </div >
   );
 }

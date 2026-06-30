@@ -110,7 +110,7 @@ export default function ComparePage() {
             <a href="/compare" className="text-white border-b border-white/40 pb-0.5">Comparison</a>
             <a href="/brands" className="text-neutral-400 hover:text-white transition-colors">Brands</a>
             <a href="/calculator" className="text-neutral-400 hover:text-white transition-colors"> EV Calculator</a>
-            <a href="/reviews" className="text-neutral-400 hover:text-white transition-colors">Reviews</a>
+            <a href="/Find-EV" className="text-neutral-400 hover:text-white transition-colors">Find-EV</a>
             <a href="/charging-stations" className="text-neutral-400 hover:text-white transition-colors">Charging Stations</a>
           </nav>
 
@@ -348,7 +348,7 @@ export default function ComparePage() {
               <li><a href="/compare" className="hover:text-[#79b947] transition-colors">Comparison</a></li>
               <li><a href="/brands" className="hover:text-[#79b947] transition-colors">Brands</a></li>
               <li><a href="/calculator" className="hover:text-[#79b947] transition-colors">EV Calculator</a></li>
-              <li><a href="/reviews" className="hover:text-[#79b947] transition-colors">Reviews</a></li>
+              <li><a href="/Find-EV" className="hover:text-[#79b947] transition-colors">Find-EV</a></li>
               <li><a href="/charging-stations" className="hover:text-[#79b947] transition-colors">Charging Stations</a></li>
             </ul>
           </div>
@@ -357,10 +357,10 @@ export default function ComparePage() {
           <div className="space-y-3">
             <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-neutral-500">// POPULAR BRANDS</h4>
             <ul className="space-y-2 text-xs font-semibold text-neutral-400">
-              <li><a href="#" className="hover:text-[#79b947] transition-colors">Revolt Motors</a></li>
-              <li><a href="#" className="hover:text-[#79b947] transition-colors">Matter Energy</a></li>
-              <li><a href="#" className="hover:text-[#79b947] transition-colors">Oben Electric</a></li>
-              <li><a href="#" className="hover:text-[#79b947] transition-colors">Tork Motors</a></li>
+              <li><a href="/brands" className="hover:text-[#79b947] transition-colors">Revolt Motors</a></li>
+              <li><a href="/brands" className="hover:text-[#79b947] transition-colors">Matter Energy</a></li>
+              <li><a href="/brands" className="hover:text-[#79b947] transition-colors">Oben Electric</a></li>
+              <li><a href="/brands" className="hover:text-[#79b947] transition-colors">Tork Motors</a></li>
             </ul>
           </div>
 
