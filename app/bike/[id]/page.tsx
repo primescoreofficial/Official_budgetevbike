@@ -1,15 +1,10 @@
 'use client';
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @next/next/no-img-element */
 
-import React, { useEffect, useState, use } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase, getBikeImageUrl } from '@/lib/supabase';
 import Link from 'next/link';
 
-export default function BikeDetailPage({ params }: { params: Promise<{ id: string }> }) {
-    const resolvedParams = use(params);
-    const targetId = resolvedParams?.id;
-
+export default function BikeDetailPage({ params }: { params: Promise<{ id: string }> | { id: string } }) {
     const [bike, setBike] = useState<any | null>(null);
     const [similarBikes, setSimilarBikes] = useState<any[]>([]);
     const [brandBikes, setBrandBikes] = useState<any[]>([]);
@@ -19,6 +14,9 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
     useEffect(() => {
         async function fetchBikeDetail() {
             try {
+                const resolvedParams = params instanceof Promise ? await params : params;
+                const targetId = resolvedParams?.id;
+
                 if (!targetId) {
                     setDbError("URL se bike ID nahi mil paayi.");
                     setLoading(false);
@@ -38,50 +36,28 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
                     setDbError(error.message);
                 } else if (data) {
                     setBike(data);
-                    
-                    const brand = data['Brand / OEM'] || data['Brand/OEM'] || '';
-                    const segment = data['Segment'] || '';
 
-                    // Fetch similar bikes (same segment, or just other bikes)
-                    let similarQuery = supabase.from('electric_bikes').select('*').neq('"S.No."', numericId);
-                    if (segment) {
-                        similarQuery = similarQuery.eq('Segment', segment);
-                    }
-                    const { data: similar } = await similarQuery.limit(4);
-                    if (similar && similar.length > 0) {
-                        setSimilarBikes(similar);
-                    } else {
-                        // Fallback to any 4 other bikes if segment match has no other bikes
-                        const { data: fallbackSimilar } = await supabase
-                            .from('electric_bikes')
-                            .select('*')
-                            .neq('"S.No."', numericId)
-                            .limit(4);
-                        if (fallbackSimilar) setSimilarBikes(fallbackSimilar);
-                    }
+                    // Fetch Similar Alternative Electric Vehicles based on Segment (Limit 4)
+                    const currentSegment = data['Segment'] || 'Mass Market';
+                    const { data: recs } = await supabase
+                        .from('electric_bikes')
+                        .select('*')
+                        .eq('Segment', currentSegment)
+                        .not('"S.No."', 'eq', numericId)
+                        .limit(4);
 
-                    // Fetch more from same brand
-                    if (brand) {
-                        const { data: brandList } = await supabase
-                            .from('electric_bikes')
-                            .select('*')
-                            .eq('Brand / OEM', brand)
-                            .neq('"S.No."', numericId)
-                            .limit(4);
-                        
-                        // Try Brand/OEM column if Brand / OEM query returns empty
-                        if (!brandList || brandList.length === 0) {
-                            const { data: brandListAlt } = await supabase
-                                .from('electric_bikes')
-                                .select('*')
-                                .eq('Brand/OEM', brand)
-                                .neq('"S.No."', numericId)
-                                .limit(4);
-                            if (brandListAlt) setBrandBikes(brandListAlt);
-                        } else {
-                            setBrandBikes(brandList);
-                        }
-                    }
+                    if (recs) setSimilarBikes(recs);
+
+                    // Fetch More Vehicles From the Same Brand/OEM (Limit 4)
+                    const currentBrand = data['Brand / OEM'] || data['Brand/OEM'] || 'Ola Electric';
+                    const { data: brandDocs } = await supabase
+                        .from('electric_bikes')
+                        .select('*')
+                        .eq('Brand/OEM', currentBrand)
+                        .not('"S.No."', 'eq', numericId)
+                        .limit(4);
+
+                    if (brandDocs) setBrandBikes(brandDocs);
                 } else {
                     setDbError(`Database mein Serial Number ${targetId} ka data nahi mila.`);
                 }
@@ -93,7 +69,7 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
         }
 
         fetchBikeDetail();
-    }, [targetId]);
+    }, [params]);
 
     if (loading) {
         return (
@@ -109,7 +85,7 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
     if (dbError || !bike) {
         return (
             <div className="bg-[#0b0c10] min-h-screen text-neutral-300 flex flex-col items-center justify-center p-6 text-center font-sans">
-                <h1 className="text-xl font-bold text-red-500 mb-2 font-mono">Oops! Details Nahi Mili</h1>
+                <h1 className="text-xl font-bold text-red-500 mb-2 font-mono">Oops! Details Not Available</h1>
                 <p className="text-neutral-500 text-sm max-w-md font-mono">{dbError}</p>
                 <Link href="/" className="mt-4 text-xs text-[#79b947] underline font-mono">Back to Home</Link>
             </div>
@@ -140,19 +116,21 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
     const finalImageUrl = getBikeImageUrl(brandName, modelName);
 
     return (
-        <div className="bg-[#0b0c10] min-h-screen text-neutral-200 font-sans antialiased pb-12 flex flex-col">
+        <div className="bg-[#0b0c10] min-h-screen text-neutral-200 font-sans antialiased flex flex-col justify-between">
+
+            {/* Main Content Wrapper */}
             <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6 w-full flex-grow">
 
                 {/* Navigation Breadcrumbs */}
                 <p className="text-neutral-500 text-[11px] font-mono uppercase tracking-wider mb-6 flex items-center gap-1.5">
                     <Link href="/" className="hover:text-[#79b947] transition-colors">Home</Link>
                     <span className="text-neutral-700">/</span>
-                    <Link href="/" className="hover:text-[#79b947] transition-colors">Find-EV</Link>
+                    <Link href="/Find-EV" className="hover:text-[#79b947] transition-colors">Find-EV</Link>
                     <span className="text-neutral-700">/</span>
                     <span className="text-[#79b947] font-bold">{brandName} {modelName}</span>
                 </p>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12">
 
                     {/* LEFT PANEL: TRUE BIKE CARD IMAGE LOCATION */}
                     <div className="lg:col-span-7">
@@ -162,7 +140,6 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
                                 alt={`${brandName} ${modelName}`}
                                 className="max-h-[280px] md:max-h-[350px] object-contain transition-transform duration-300 group-hover:scale-105"
                                 onError={(e) => {
-                                    // Fallback to Supabase Storage Storage structure if the local public folder asset missing
                                     const projectID = 'bwneyzbsohxwlgdludby';
                                     e.currentTarget.src = `https://${projectID}.supabase.co/storage/v1/object/public/bikes/${bikeId}.png`;
                                 }}
@@ -232,12 +209,10 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
                     </div>
 
                 </div>
-            </div>
 
-            {/* ========================================================= */}
-            {/* 📝 SECTION: ABOUT THIS VEHICLE */}
-            {/* ========================================================= */}
-            <div className="max-w-7xl mx-auto px-4 md:px-8 mt-12 w-full">
+                {/* ========================================================= */}
+                {/* 📝 SECTION: ABOUT THIS VEHICLE */}
+                {/* ========================================================= */}
                 <div className="border-t border-neutral-900/60 pt-10 mb-12">
                     <h2 className="text-xl font-extrabold text-white tracking-tight">About This Vehicle</h2>
                     <div className="bg-neutral-900/40 border border-neutral-800/60 rounded-2xl p-6 mt-4 font-mono text-xs text-neutral-400 leading-relaxed max-w-4xl">
@@ -253,38 +228,33 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
                 {/* ========================================================= */}
                 {/* SECTION: SIMILAR ELECTRIC VEHICLES */}
                 {/* ========================================================= */}
-                <div className="border-t border-neutral-900/60 pt-10 mb-12">
+                <div className="border-t border-neutral-900/60 pt-10 mb-16">
                     <h2 className="text-xl font-extrabold text-white tracking-tight">Similar Electric Vehicles</h2>
                     <p className="text-neutral-500 text-xs mt-1 mb-6 font-mono">Compare alternatives with similar pricing, range, body style, and features.</p>
-                    
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
                         {similarBikes && similarBikes.length > 0 ? similarBikes.map((sb) => {
                             const sId = sb['S.No.'];
-                            const sBrand = sb['Brand / OEM'] || sb['Brand/OEM'] || 'Unknown';
-                            const sModel = sb['Model Name'] || 'E-Bike';
-                            const sImgUrl = getBikeImageUrl(sBrand, sModel);
-                            
                             const sRange = Number(sb['Certified Range (km)']) || 0;
-                            const sTopSpeed = Number(sb['Top Speed (km/h)']) || 0;
+                            const sSpeed = Number(sb['Top Speed (km/h)']) || 0;
                             const sBattery = Number(sb['Battery Capacity (kWh)']) || 2;
-                            let sEstPrice = 80000 + (sRange * 300) + (sTopSpeed * 400) + (sBattery * 5000);
-                            sEstPrice = Math.round(sEstPrice / 1000) * 1000;
-                            const sPrice = `₹${sEstPrice.toLocaleString('en-IN')}*`;
+                            let sPriceCalc = 80000 + (sRange * 300) + (sSpeed * 400) + (sBattery * 5000);
+                            sPriceCalc = Math.round(sPriceCalc / 1000) * 1000;
 
                             return (
                                 <div key={sId} className="bg-neutral-900/40 border border-neutral-800/60 rounded-xl p-4 flex flex-col justify-between shadow-md hover:border-neutral-700/80 transition-all">
                                     <div className="flex items-center justify-center bg-neutral-950/40 rounded-lg p-3 min-h-[140px] mb-3">
-                                        <img 
-                                            src={sImgUrl} 
-                                            className="max-h-[100px] object-contain" 
-                                            alt={sModel}
-                                            onError={(e) => { e.currentTarget.src = `https://bwneyzbsohxwlgdludby.supabase.co/storage/v1/object/public/bikes/${sId}.png`; }}
+                                        <img
+                                            src={`https://bwneyzbsohxwlgdludby.supabase.co/storage/v1/object/public/bikes/${sId}.png`}
+                                            className="max-h-[100px] object-contain"
+                                            alt={sb['Model Name']}
+                                            onError={(e) => { e.currentTarget.src = `https://bwneyzbsohxwlgdludby.supabase.co/storage/v1/object/public/bikes/1.png`; }}
                                         />
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-bold text-white truncate">{sBrand} {sModel}</h3>
+                                        <h3 className="text-sm font-bold text-white truncate">{sb['Brand / OEM'] || sb['Brand/OEM']} {sb['Model Name']}</h3>
                                         <p className="text-[11px] font-mono text-[#79b947] mt-0.5">{sb['Variant Name'] || `${sb['Battery Capacity (kWh)']} kWh`}</p>
-                                        <p className="text-xs font-mono font-bold text-neutral-400 mt-2">{sPrice}</p>
+                                        <p className="text-xs font-mono font-bold text-neutral-400 mt-2">₹{sPriceCalc.toLocaleString('en-IN')}*</p>
                                     </div>
                                     <Link href={`/bike/${sId}`} className="mt-4 w-full text-center bg-neutral-800 hover:bg-neutral-700 text-white font-semibold text-[11px] py-2 rounded-md tracking-wide transition-colors block">
                                         View Details
@@ -297,73 +267,27 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
                     </div>
                 </div>
 
-                {/* ========================================================= */}
-                {/* SECTION: MORE FROM BRAND */}
-                {/* ========================================================= */}
-                <div className="border-t border-neutral-900/60 pt-10 mb-16">
-                    <h2 className="text-xl font-extrabold text-white tracking-tight">More from {brandName}</h2>
-                    <p className="text-neutral-500 text-xs mt-1 mb-6 font-mono">Explore more electric vehicles from {brandName} lineup portfolio.</p>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
-                        {brandBikes && brandBikes.length > 0 ? brandBikes.map((bb) => {
-                            const bId = bb['S.No.'];
-                            const bBrand = bb['Brand / OEM'] || bb['Brand/OEM'] || 'Unknown';
-                            const bModel = bb['Model Name'] || 'E-Bike';
-                            const bImgUrl = getBikeImageUrl(bBrand, bModel);
-
-                            const bRange = Number(bb['Certified Range (km)']) || 0;
-                            const bTopSpeed = Number(bb['Top Speed (km/h)']) || 0;
-                            const bBattery = Number(bb['Battery Capacity (kWh)']) || 2;
-                            let bEstPrice = 80000 + (bRange * 300) + (bTopSpeed * 400) + (bBattery * 5000);
-                            bEstPrice = Math.round(bEstPrice / 1000) * 1000;
-                            const bPrice = `₹${bEstPrice.toLocaleString('en-IN')}*`;
-
-                            return (
-                                <div key={bId} className="bg-neutral-900/40 border border-neutral-800/60 rounded-xl p-4 flex flex-col justify-between shadow-md hover:border-neutral-700/80 transition-all">
-                                    <div className="flex items-center justify-center bg-neutral-950/40 rounded-lg p-3 min-h-[140px] mb-3">
-                                        <img 
-                                            src={bImgUrl} 
-                                            className="max-h-[100px] object-contain" 
-                                            alt={bModel}
-                                            onError={(e) => { e.currentTarget.src = `https://bwneyzbsohxwlgdludby.supabase.co/storage/v1/object/public/bikes/${bId}.png`; }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-sm font-bold text-white truncate">{bBrand} {bModel}</h3>
-                                        <p className="text-[11px] font-mono text-[#79b947] mt-0.5">{bb['Variant Name'] || `${bb['Battery Capacity (kWh)']} kWh`}</p>
-                                        <p className="text-xs font-mono font-bold text-neutral-400 mt-2">{bPrice}</p>
-                                    </div>
-                                    <Link href={`/bike/${bId}`} className="mt-4 w-full text-center bg-neutral-800 hover:bg-neutral-700 text-white font-semibold text-[11px] py-2 rounded-md tracking-wide transition-colors block">
-                                        View Details
-                                    </Link>
-                                </div>
-                            );
-                        }) : (
-                            <div className="col-span-4 text-center py-6 border border-dashed border-neutral-800 rounded-xl text-neutral-600 text-xs font-mono">No extra platform models available for {brandName} currently.</div>
-                        )}
-                    </div>
-                </div>
-            </div>
+            </div> {/* Main Content Wrapper Ends */}
 
             {/* ========================================================= */}
             {/* 🌟 EXACT MATCHED 4-COLUMN FOOTER COMPONENT */}
             {/* ========================================================= */}
             <footer className="w-full bg-neutral-950 border-t border-neutral-900/80 py-12 text-neutral-400 font-mono text-xs mt-auto">
                 <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-                    
+
                     {/* COLUMN 1 */}
                     <div className="md:col-span-4 flex flex-col gap-3">
                         <div className="text-white font-black tracking-tighter text-base uppercase flex items-center gap-1">
                             EV<span className="text-[#79b947]">.BIKE</span>
                         </div>
                         <p className="text-neutral-500 leading-relaxed max-w-sm text-[11px]">
-                            {"India's most trusted platform for finding, comparing, and analyzing electric vehicles within your budget."}
+                            India's most trusted platform for finding, comparing, and analyzing electric vehicles within your budget.
                         </p>
                     </div>
 
                     {/* COLUMN 2 */}
                     <div className="md:col-span-2 flex flex-col gap-2">
-                        <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider mb-1">{"// QUICK LINKS"}</span>
+                        <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider mb-1">// QUICK LINKS</span>
                         <Link href="/" className="hover:text-[#79b947] transition-colors">Home</Link>
                         <Link href="/" className="hover:text-[#79b947] transition-colors">Comparison</Link>
                         <Link href="/" className="hover:text-[#79b947] transition-colors">Brands</Link>
@@ -374,7 +298,7 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
 
                     {/* COLUMN 3 */}
                     <div className="md:col-span-3 flex flex-col gap-2">
-                        <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider mb-1">{"// POPULAR BRANDS"}</span>
+                        <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider mb-1">// POPULAR BRANDS</span>
                         <span className="hover:text-[#79b947] cursor-pointer transition-colors">Revolt Motors</span>
                         <span className="hover:text-[#79b947] cursor-pointer transition-colors">Matter Energy</span>
                         <span className="hover:text-[#79b947] cursor-pointer transition-colors">Oben Electric</span>
@@ -383,7 +307,7 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
 
                     {/* COLUMN 4 */}
                     <div className="md:col-span-3 flex flex-col gap-2">
-                        <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider mb-1">{"// CONTACT SUPPORT"}</span>
+                        <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider mb-1">// CONTACT SUPPORT</span>
                         <p className="text-neutral-300 font-bold">+91 63506-71636</p>
                         <a href="mailto:info@evbike.com" className="hover:text-[#79b947] transition-colors text-neutral-400 break-all">info@evbike.com</a>
                     </div>
@@ -393,9 +317,10 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
                 {/* COPYRIGHT TRACK */}
                 <div className="max-w-7xl mx-auto px-4 md:px-8 border-t border-neutral-900/60 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center text-[10px] text-neutral-600 gap-2">
                     <p>© 2026 EV.BIKE MATRIX MEDIA. ALL RIGHTS RESERVED.</p>
-                    <p className="tracking-widest uppercase text-neutral-500 text-[9px]">{"MADE FOR INDIA'EV REVOLUTION"}</p>
+                    <p className="tracking-widest uppercase text-neutral-500 text-[9px]">MADE FOR INDIA'S EV REVOLUTION</p>
                 </div>
             </footer>
+
         </div>
     );
 }
