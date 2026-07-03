@@ -330,10 +330,10 @@ export default function FindEVPage() {
 
             <div className="md:col-span-2 md:col-start-6 flex flex-col gap-2.5">
               <h3 className="text-[11px] font-bold uppercase tracking-widest text-neutral-300 mb-1 font-mono">// QUICK LINKS</h3>
-              <a href="/home" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Home</a>
-              <a href="/comparison" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Comparison</a>
+              <a href="/" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Home</a>
+              <a href="/compare" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Comparison</a>
               <a href="/brands" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Brands</a>
-              <a href="/ev-calculator" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">EV Calculator</a>
+              <a href="/calculator" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">EV Calculator</a>
               <a href="/Find-EV" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Find-EV</a>
               <a href="/charging-stations" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Charging Stations</a>
             </div>

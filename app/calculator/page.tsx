@@ -226,7 +226,7 @@ export default function CalculatorPage() {
           <div className="space-y-3">
             <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-neutral-500">// QUICK LINKS</h4>
             <ul className="space-y-2 text-xs font-semibold text-neutral-400">
-              <li><a href="/" className="hover:text-[#79b947] transition-colors">New Bikes</a></li>
+              <li><a href="/" className="hover:text-[#79b947] transition-colors">Home</a></li>
               <li><a href="/compare" className="hover:text-[#79b947] transition-colors">Comparison</a></li>
               <li><a href="/brands" className="hover:text-[#79b947] transition-colors">Brands</a></li>
               <li><a href="/calculator" className="hover:text-[#79b947] transition-colors">EV Calculator</a></li>
