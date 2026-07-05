@@ -586,13 +586,49 @@ export default function Home() {
               <li><a href="/brands" className="hover:text-[#79b947]">Tork Motors</a></li>
             </ul>
           </div>
+          <div className="space-y-2.5 text-left w-full max-w-[250px]">
+            {/* Header Title - Matching text tone */}
+            <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-neutral-500">
+              // CONTACT
+            </h4>
 
-          <div className="space-y-3">
-            <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-neutral-500">// Contact Support</h4>
-            <ul className="space-y-2.5 text-xs font-semibold text-neutral-400">
-              <li className="text-neutral-300 font-sans">+91 63506-71636</li>
-              <li className="text-neutral-300 break-all font-sans">info@evbike.com</li>
-            </ul>
+            {/* Compact Form Fields */}
+            <form className="space-y-2">
+              <div>
+                <input
+                  type="text"
+                  placeholder="Name *"
+                  required
+                  className="w-full bg-[#1b253b] border border-transparent text-[11px] rounded-lg p-2.5 text-neutral-200 focus:outline-none focus:border-neutral-700 transition-all placeholder-neutral-500 font-sans font-medium shadow-inner"
+                />
+              </div>
+
+              <div>
+                <input
+                  type="email"
+                  placeholder="Email *"
+                  required
+                  className="w-full bg-[#1b253b] border border-transparent text-[11px] rounded-lg p-2.5 text-neutral-200 focus:outline-none focus:border-neutral-700 transition-all placeholder-neutral-500 font-sans font-medium shadow-inner"
+                />
+              </div>
+
+              <div>
+                <textarea
+                  placeholder="Query / Message *"
+                  rows={2}
+                  required
+                  className="w-full bg-[#1b253b] border border-transparent text-[11px] rounded-lg p-2.5 text-neutral-200 focus:outline-none focus:border-neutral-700 transition-all placeholder-neutral-500 resize-none font-sans font-medium shadow-inner"
+                ></textarea>
+              </div>
+
+              {/* Clean White Theme Button - Exact Matching with top SUBSCRIBE button */}
+              <button
+                type="submit"
+                className="block w-full text-center text-[10px] font-mono font-bold uppercase bg-white text-black py-2.5 rounded-lg tracking-widest transition-all duration-300 shadow-md hover:bg-[#79b947] hover:text-white"
+              >
+                Submit Query
+              </button>
+            </form>
           </div>
         </div>
 
