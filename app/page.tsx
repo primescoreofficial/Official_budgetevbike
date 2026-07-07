@@ -1,5 +1,6 @@
 'use client';
 
+import Image from "next/image";
 import { useEffect, useState, useMemo } from 'react';
 import { supabase, getBikeImageUrl } from '@/lib/supabase';
 import { ArrowRight, Plus, Zap, Gauge, BatteryCharging, Menu } from 'lucide-react';
@@ -404,18 +405,28 @@ export default function Home() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {(reviews && reviews.length > 0 ? reviews : [
-            { id: 1, tag: "LAB TEST", date: "June 2026", title: "BudgetEV Bike: Real-World Performance & Heavy Load City Range Test.", description: "Humne is budget electric bike ko bhari traffic aur alag-alag roads par test kiya hai." },
-            { id: 2, tag: "VERDICT", date: "May 2026", title: "Why BudgetEV Bike is the Best Pocket-Friendly Option in 2026.", description: "Low maintenance costs aur behtareen battery backup ke sath ye bike daily office ke liye best hai." },
-            { id: 3, tag: "PREVIEW", date: "April 2026", title: "BudgetEV Bike Detailed Review: High Comfort & Smart Features.", description: "Is price range mein digital console aur smooth suspension jaise premium features ka breakdown." }
-          ]).map((r: any, index: number) => (
+          {((reviews && reviews.length > 0 ? reviews : [
+            { id: 1, tag: "BUDGET EV-BIKE", date: "June 2026", title: "BudgetEV Bike: Real-World Performance & Heavy Load City Range Test.", description: "Humne is budget electric bike ko bhari traffic aur alag-alag roads par test kiya hai.", localImage: "/EV_Bike/Ampere/Ampere Magnus.png" },
+            { id: 2, tag: "BUDGET EV-BIKE", date: "May 2026", title: "Why BudgetEV Bike is the Best Pocket-Friendly Option in 2026.", description: "Low maintenance costs aur behtareen battery backup ke sath ye bike daily office ke liye best hai.", localImage: "/EV_Bike/Ather Energy/Anther Energy 450X.png" },
+            { id: 3, tag: "BUDGET EV-BIKE", date: "April 2026", title: "BudgetEV Bike Detailed Review: High Comfort & Smart Features.", description: "Is price range mein digital console aur smooth suspension jaise premium features ka breakdown.", localImage: "/EV_Bike/Atumobile/Atumobile AtumVader.png" }
+          ])).map((r: any, index: number) => (
 
-            /* YAHAN DEKHO: Humne har card ko Link ke andar daal diya hai jo unhe unki id wale page par le jayega */
             <Link href={`/reviews/${r.id}`} key={index} className="block group cursor-pointer">
               <article>
-                <div className="aspect-[16/10] bg-neutral-900 border border-neutral-800 rounded-xl mb-5 overflow-hidden flex items-center justify-center">
-                  <div className="w-full h-full bg-gradient-to-br from-[#79b947]/10 to-neutral-900 flex items-center justify-center font-mono text-[10px] tracking-wider text-neutral-500">
-                    {r.tag} OVERLAY
+
+                {/* Gray box ko hata kar Image element set kiya */}
+                <div className="aspect-[16/10] bg-neutral-900 border border-neutral-800 rounded-xl mb-5 overflow-hidden flex items-center justify-center relative">
+                  <Image
+                    src={r.localImage}
+                    alt={r.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    priority={index === 0}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent flex items-center justify-center font-mono text-center opacity-80 group-hover:opacity-100 transition-opacity">
+                    <span className="text-white text-[10px] tracking-wider uppercase bg-black/40 px-2 py-1 rounded border border-white/10">
+                      {r.tag}
+                    </span>
                   </div>
                 </div>
 
@@ -423,18 +434,21 @@ export default function Home() {
                   <span className="px-2 py-0.5 bg-[#79b947]/10 text-[#79b947] text-[9px] font-mono font-bold uppercase rounded">
                     {r.tag}
                   </span>
-                  <span className="text-neutral-600 text-[9px] font-mono pt-0.5">{r.date}</span>
+                  <span className="text-neutral-600 text-[9px] font-mono pt-0.5">
+                    {r.date}
+                  </span>
                 </div>
 
-                <h3 className="text-lg font-bold mb-2 group-hover:text-[#79b947] transition-colors text-balance leading-snug">
+                <h3 className="text-text-lg font-bold mb-2 group-hover:text-[#79b947] transition-colors text-balance leading-snug">
                   {r.title}
                 </h3>
+
                 <p className="text-neutral-400 text-xs leading-relaxed line-clamp-3">
                   {r.description}
                 </p>
+
               </article>
             </Link>
-
           ))}
         </div>
       </section>
