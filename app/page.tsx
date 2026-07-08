@@ -83,15 +83,9 @@ export default function Home() {
       }
     }
 
-    // Dono functions ko ek sath call kar rahe hain
     fetchBikes();
 
-    fetch("/api/reviews")
-      .then((res) => res.json())
-      .then((data) => setReviews(data))
-      .catch((err) => console.error("Error fetching reviews:", err));
-
-  }, []); // Yeh bracket aur array yahan par smoothly band ho gaya
+  }, []);
 
   // Filter Logic
   useEffect(() => {
