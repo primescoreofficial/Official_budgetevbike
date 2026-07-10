@@ -1,7 +1,9 @@
 'use client';
 
+import emailjs from '@emailjs/browser';
+emailjs.init('olk423PwMI8botT3E');
 import Image from "next/image";
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { supabase, getBikeImageUrl } from '@/lib/supabase';
 import { ArrowRight, Plus, Zap, Gauge, BatteryCharging, Menu } from 'lucide-react';
 import Link from 'next/link';
@@ -26,6 +28,30 @@ export default function Home() {
   const [subscriberEmail, setSubscriberEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // EmailJS Contact Form Logic
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Contact Form Submitting...");
+
+    if (!formRef.current) return;
+
+    try {
+      await emailjs.sendForm(
+        'service_3zqkomo',
+        'template_ywylu57',
+        formRef.current,
+        'olk423PwMI8botT3E'
+      );
+
+      alert("Query sent successfully! 👍");
+      formRef.current.reset();
+    } catch (err) {
+      console.error("EmailJS Error:", err);
+      alert("Error sending message. ❌");
+    }
+  };
   // Filters State
   const [selectedBrand, setSelectedBrand] = useState('Select Brand');
   const [selectedBudget, setSelectedBudget] = useState('Any Budget');
@@ -40,7 +66,8 @@ export default function Home() {
   }, [filteredBikes]);
 
   // 1. Reviews ke liye state (Yeh ab useEffect ke bahar hai, isliye error nahi aayega)
-  const [reviews, setReviews] = useState([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [reviews] = useState<any[]>([]);
 
   // 2. Fetch data from Supabase and Reviews API
   useEffect(() => {
@@ -51,6 +78,7 @@ export default function Home() {
           .select('*');
 
         if (!error && data) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const mappedBikes: ElectricBike[] = data.map((item: any) => {
             const range = Number(item['Certified Range (km)']) || 0;
             const topSpeed = Number(item['Top Speed (km/h)']) || 0;
@@ -75,11 +103,13 @@ export default function Home() {
             };
           });
 
-          // Agar aapke paas setBikes ya setFilteredBikes pehle se tha, toh wo iske niche aayega:
-          // setBikes(mappedBikes); 
+          setBikes(mappedBikes);
+          setFilteredBikes(mappedBikes);
         }
       } catch (err) {
         console.error("Error fetching bikes:", err);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -110,7 +140,7 @@ export default function Home() {
       if (selectedRange === '190+ km') result = result.filter(bike => bike.range_km >= 190);
     }
 
-    setFilteredBikes(result);
+    setTimeout(() => setFilteredBikes(result), 0);
   }, [selectedBrand, selectedBudget, selectedRange, bikes]);
 
   // Unique Brands dynamic generation
@@ -120,6 +150,7 @@ export default function Home() {
     typeof price === 'number' ? price.toLocaleString('en-IN') : '—';
 
   // Static expert reviews section (Lovable style template)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const dummyReviews = [
     { tag: "LAB TEST", date: "JUNE 2026", title: "In-Depth: Real-world range test of the latest urban high-speed electric scooters.", excerpt: "We push the limits on Indian city roads to see if advertised specifications live up to reality under heavy traffic conditions." },
     { tag: "VERDICT", date: "MAY 2026", title: "Revolt RV400 vs Ather 450X: The ultimate commuter battle.", excerpt: "A classic showdown between performance-oriented electric scooters and motorcycle form-factors for daily office travel." },
@@ -172,25 +203,24 @@ export default function Home() {
             </span>
           </div>
           <nav className="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-[0.15em]">
-            <a href="/" className="text-white border-b border-white/40 pb-0.5">
-
+            <Link href="/" className="text-white border-b border-white/40 pb-0.5">
               Home
-            </a>
-            <a href="/compare" className="hover:text-white transition-colors">
+            </Link>
+            <Link href="/compare" className="hover:text-white transition-colors">
               Comparison
-            </a>
-            <a href="/brands" className="hover:text-white transition-colors">
+            </Link>
+            <Link href="/brands" className="hover:text-white transition-colors">
               Brands
-            </a>
-            <a href="/calculator" className="hover:text-[#aaff00] transition-colors font-extrabold text-neutral-300">
+            </Link>
+            <Link href="/calculator" className="hover:text-[#aaff00] transition-colors font-extrabold text-neutral-300">
               EV Calculator
-            </a>
-            <a href="/Find-EV" className="hover:text-white transition-colors">
+            </Link>
+            <Link href="/Find-EV" className="hover:text-white transition-colors">
               Find-EV
-            </a>
-            <a href="/charging-stations" className="hover:text-white transition-colors">
+            </Link>
+            <Link href="/charging-stations" className="hover:text-white transition-colors">
               Charging Stations
-            </a>
+            </Link>
           </nav>
 
           <button className="md:hidden text-neutral-400 hover:text-white">
@@ -202,7 +232,7 @@ export default function Home() {
       {/* 2. Hero Section */}
       <section className="relative border-b border-neutral-800 overflow-hidden bg-gradient-to-b from-neutral-900 to-neutral-950">
         <div className="max-w-7xl mx-auto px-6 py-20 md:py-28 relative z-10">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#79b947] mb-5">// Comparison engine v2.0</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#79b947] mb-5">{"//"} Comparison engine v2.0</p>
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter mb-6 max-w-4xl leading-none">
             Find your perfect{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#79b947] to-emerald-400">electric pulse.</span>
@@ -360,7 +390,7 @@ export default function Home() {
       <section className="bg-neutral-900 border-y border-neutral-800 py-20 px-6">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
           <div>
-            <span className="text-[#79b947] font-mono text-[10px] uppercase tracking-[0.2em] mb-4 block">// Side-by-side</span>
+            <span className="text-[#79b947] font-mono text-[10px] uppercase tracking-[0.2em] mb-4 block">{"//"} Side-by-side</span>
             <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight uppercase mb-6 leading-tight">
               Spec analysis,<br />without the noise.
             </h2>
@@ -403,6 +433,7 @@ export default function Home() {
             { id: 1, tag: "BUDGET EV-BIKE", date: "June 2026", title: "BudgetEV Bike: Real-World Performance & Heavy Load City Range Test.", description: "Humne is budget electric bike ko bhari traffic aur alag-alag roads par test kiya hai.", localImage: "/EV_Bike/Ampere/Ampere Magnus.png" },
             { id: 2, tag: "BUDGET EV-BIKE", date: "May 2026", title: "Why BudgetEV Bike is the Best Pocket-Friendly Option in 2026.", description: "Low maintenance costs aur behtareen battery backup ke sath ye bike daily office ke liye best hai.", localImage: "/EV_Bike/Ather Energy/Anther Energy 450X.png" },
             { id: 3, tag: "BUDGET EV-BIKE", date: "April 2026", title: "BudgetEV Bike Detailed Review: High Comfort & Smart Features.", description: "Is price range mein digital console aur smooth suspension jaise premium features ka breakdown.", localImage: "/EV_Bike/Atumobile/Atumobile AtumVader.png" }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ])).map((r: any, index: number) => (
 
             <Link href={`/reviews/${r.id}`} key={index} className="block group cursor-pointer">
@@ -452,13 +483,13 @@ export default function Home() {
           <div className="space-y-10">
             <div>
               <p className="text-xs font-mono font-bold text-[#aaff00] tracking-widest uppercase mb-3">
-                // COMPARISON ENGINE V2.0
+                {"//"} COMPARISON ENGINE V2.0
               </p>
               <h2 className="text-4xl lg:text-5xl font-black text-white tracking-tight leading-none">
                 The Future is <span className="text-[#aaff00] drop-shadow-[0_0_15px_rgba(170,255,0,0.2)]">Electric</span>
               </h2>
               <p className="mt-4 text-neutral-400 text-sm md:text-base max-w-md leading-relaxed">
-                Switching to an EV is more than a purchase; it's an investment in a cleaner, more efficient way to travel.
+                Switching to an EV is more than a purchase; it&apos;s an investment in a cleaner, more efficient way to travel.
               </p>
             </div>
 
@@ -597,42 +628,43 @@ export default function Home() {
               </span>
             </div>
             <p className="text-neutral-500 text-xs font-medium">
-              India's most trusted platform for finding, comparing, and analyzing electric vehicles within your budget.
+              India&apos;s most trusted platform for finding, comparing, and analyzing electric vehicles within your budget.
             </p>
           </div>
 
           <div className="space-y-3">
-            <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-neutral-500">// Quick Links</h4>
+            <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-neutral-500">{"//"} Quick Links</h4>
             <ul className="space-y-2 text-xs font-semibold text-neutral-400">
-              <li><a href="/" className="hover:text-[#79b947]">Home</a></li>
-              <li><a href="/compare" className="hover:text-[#79b947]">Comparison</a></li>
-              <li><a href="/brands" className="hover:text-[#79b947]">Brands</a></li>
-              <li><a href="/calculator" className="hover:text-[#79b947]">EV Calculator</a></li>
-              <li><a href="/Find-EV" className="hover:text-[#79b947]">Find-EV</a></li>
-              <li><a href="/charging-stations" className="hover:text-[#79b947]">Charging Stations</a></li>
+              <li><Link href="/" className="hover:text-[#79b947]">Home</Link></li>
+              <li><Link href="/compare" className="hover:text-[#79b947]">Comparison</Link></li>
+              <li><Link href="/brands" className="hover:text-[#79b947]">Brands</Link></li>
+              <li><Link href="/calculator" className="hover:text-[#79b947]">EV Calculator</Link></li>
+              <li><Link href="/Find-EV" className="hover:text-[#79b947]">Find-EV</Link></li>
+              <li><Link href="/charging-stations" className="hover:text-[#79b947]">Charging Stations</Link></li>
             </ul>
           </div>
 
           <div className="space-y-3">
-            <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-neutral-500">// Popular Brands</h4>
+            <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-neutral-500">{"//"} Popular Brands</h4>
             <ul className="space-y-2 text-xs font-semibold text-neutral-400">
-              <li><a href="/brands" className="hover:text-[#79b947]">Revolt Motors</a></li>
-              <li><a href="/brands" className="hover:text-[#79b947]">Matter Energy</a></li>
-              <li><a href="/brands" className="hover:text-[#79b947]">Oben Electric</a></li>
-              <li><a href="/brands" className="hover:text-[#79b947]">Tork Motors</a></li>
+              <li><Link href="/brands" className="hover:text-[#79b947]">Revolt Motors</Link></li>
+              <li><Link href="/brands" className="hover:text-[#79b947]">Matter Energy</Link></li>
+              <li><Link href="/brands" className="hover:text-[#79b947]">Oben Electric</Link></li>
+              <li><Link href="/brands" className="hover:text-[#79b947]">Tork Motors</Link></li>
             </ul>
           </div>
           <div className="space-y-2.5 text-left w-full max-w-[250px]">
             {/* Header Title - Matching text tone */}
             <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-neutral-500">
-              // CONTACT
+              {"//"} CONTACT
             </h4>
 
-            {/* Compact Form Fields */}
-            <form className="space-y-2">
+            {/* Contact Form Fields */}
+            <form ref={formRef} onSubmit={handleContactSubmit} className="space-y-2">
               <div>
                 <input
                   type="text"
+                  name="from_name"
                   placeholder="Name *"
                   required
                   className="w-full bg-[#1b253b] border border-transparent text-[11px] rounded-lg p-2.5 text-neutral-200 focus:outline-none focus:border-neutral-700 transition-all placeholder-neutral-500 font-sans font-medium shadow-inner"
@@ -642,6 +674,7 @@ export default function Home() {
               <div>
                 <input
                   type="email"
+                  name="reply_to"
                   placeholder="Email *"
                   required
                   className="w-full bg-[#1b253b] border border-transparent text-[11px] rounded-lg p-2.5 text-neutral-200 focus:outline-none focus:border-neutral-700 transition-all placeholder-neutral-500 font-sans font-medium shadow-inner"
@@ -650,6 +683,7 @@ export default function Home() {
 
               <div>
                 <textarea
+                  name="message"
                   placeholder="Query / Message *"
                   rows={2}
                   required
@@ -671,7 +705,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[9px] font-bold uppercase tracking-widest text-neutral-700">
           <div>© 2026 ev.BIKE Matrix Media. All rights reserved.</div>
           <div className="text-neutral-600 font-sans tracking-normal font-medium text-xs">
-            Made for India's EV revolution ⚡
+            Made for India&apos;s EV revolution ⚡
           </div>
         </div>
       </footer >

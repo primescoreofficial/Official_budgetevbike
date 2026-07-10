@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import emailjs from '@emailjs/browser';
+import { useEffect, useState, useRef } from 'react';
 import { supabase, getBikeImageUrl } from '@/lib/supabase';
-import { ArrowLeft, Zap, Gauge, BatteryCharging, ShieldAlert } from 'lucide-react';
+import Link from 'next/link';
 
 interface ElectricBike {
   id: number;
@@ -25,6 +26,29 @@ export default function ComparePage() {
   const [bikeC, setBikeC] = useState<ElectricBike | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // EmailJS Contact Form Logic for Compare Page
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Contact Form Submitting...");
+    if (!formRef.current) return;
+
+    try {
+      await emailjs.sendForm(
+        'service_3zqkomo',
+        'template_ywylu57',
+        formRef.current,
+        'olk423PwMI8botT3E'
+      );
+      alert("Query sent successfully! 👍");
+      formRef.current.reset();
+    } catch (err) {
+      console.error("EmailJS Error:", err);
+      alert("Error sending message. ❌");
+    }
+  };
+
   const handleSelectC = (id: string) => {
     const selected = bikes.find((b) => String(b.id) === String(id));
     setBikeC(selected || null);
@@ -37,6 +61,7 @@ export default function ComparePage() {
           .select('*');
 
         if (!error && data) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const mappedBikes: ElectricBike[] = data.map((item: any) => {
             const range = Number(item['Certified Range (km)']) || 0;
             const topSpeed = Number(item['Top Speed (km/h)']) || 0;
@@ -99,20 +124,20 @@ export default function ComparePage() {
         {/* Yahan max-w-7xl ko max-w-[1400px] aur h-16 ko h-24 kar diya */}
         <div className="max-w-[1400px] mx-auto px-6 h-24 flex items-center justify-between">
 
-          <a href="/" className="flex items-center gap-3 cursor-pointer">
+          <Link href="/" className="flex items-center gap-3 cursor-pointer">
             {/* Yahan logo ki height h-8 se badha kar h-9 kar di */}
             <img src="/logo.png" alt="ev.BIKE Logo" className="h-9 w-auto object-contain" />
             <span className="text-xl font-black tracking-tighter uppercase">
               ev.<span className="text-[#79b947]">bike</span>
             </span>
-          </a>
+          </Link>
           <nav className="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-[0.15em]">
-            <a href="/" className="text-neutral-400 hover:text-white transition-colors">Home</a>
-            <a href="/compare" className="text-white border-b border-white/40 pb-0.5">Comparison</a>
-            <a href="/brands" className="text-neutral-400 hover:text-white transition-colors">Brands</a>
-            <a href="/calculator" className="text-neutral-400 hover:text-white transition-colors"> EV Calculator</a>
-            <a href="/Find-EV" className="text-neutral-400 hover:text-white transition-colors">Find-EV</a>
-            <a href="/charging-stations" className="text-neutral-400 hover:text-white transition-colors">Charging Stations</a>
+            <Link href="/" className="text-neutral-400 hover:text-white transition-colors">Home</Link>
+            <Link href="/compare" className="text-white border-b border-white/40 pb-0.5">Comparison</Link>
+            <Link href="/brands" className="text-neutral-400 hover:text-white transition-colors">Brands</Link>
+            <Link href="/calculator" className="text-neutral-400 hover:text-white transition-colors"> EV Calculator</Link>
+            <Link href="/Find-EV" className="text-neutral-400 hover:text-white transition-colors">Find-EV</Link>
+            <Link href="/charging-stations" className="text-neutral-400 hover:text-white transition-colors">Charging Stations</Link>
           </nav>
 
         </div>
@@ -121,7 +146,7 @@ export default function ComparePage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-12">
         <div className="mb-10">
-          <span className="text-[#79b947] font-mono text-[10px] uppercase tracking-[0.2em] mb-3 block">// Side-By-Side Spec Comparison</span>
+          <span className="text-[#79b947] font-mono text-[10px] uppercase tracking-[0.2em] mb-3 block">{"//"} Side-By-Side Spec Comparison</span>
           <h1 className="text-4xl font-extrabold tracking-tight uppercase">Compare E-Bikes</h1>
           <p className="text-neutral-500 text-sm mt-1">Select two electric two-wheelers to compare technical specifications side-by-side</p>
         </div>
@@ -337,44 +362,67 @@ export default function ComparePage() {
               </span>
             </div>
             <p className="text-neutral-500 text-xs font-medium leading-relaxed">
-              India's most trusted platform for finding, comparing, and analyzing electric vehicles within your budget.
+              India&apos;s most trusted platform for finding, comparing, and analyzing electric vehicles within your budget.
             </p>
           </div>
 
           {/* Column 2: Quick Links */}
           <div className="space-y-3">
-            <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-neutral-500">// QUICK LINKS</h4>
+            <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-neutral-500">{"//"} QUICK LINKS</h4>
             <ul className="space-y-2 text-xs font-semibold text-neutral-400">
-              <li><a href="/" className="hover:text-[#79b947] transition-colors">Home
-              </a></li>
-              <li><a href="/compare" className="hover:text-[#79b947] transition-colors">Comparison</a></li>
-              <li><a href="/brands" className="hover:text-[#79b947] transition-colors">Brands</a></li>
-              <li><a href="/calculator" className="hover:text-[#79b947] transition-colors">EV Calculator</a></li>
-              <li><a href="/Find-EV" className="hover:text-[#79b947] transition-colors">Find-EV</a></li>
-              <li><a href="/charging-stations" className="hover:text-[#79b947] transition-colors">Charging Stations</a></li>
+              <li><Link href="/" className="hover:text-[#79b947] transition-colors">Home
+              </Link></li>
+              <li><Link href="/compare" className="hover:text-[#79b947] transition-colors">Comparison</Link></li>
+              <li><Link href="/brands" className="hover:text-[#79b947] transition-colors">Brands</Link></li>
+              <li><Link href="/calculator" className="hover:text-[#79b947] transition-colors">EV Calculator</Link></li>
+              <li><Link href="/Find-EV" className="hover:text-[#79b947] transition-colors">Find-EV</Link></li>
+              <li><Link href="/charging-stations" className="hover:text-[#79b947] transition-colors">Charging Stations</Link></li>
             </ul>
           </div>
 
           {/* Column 3: Popular Brands */}
           <div className="space-y-3">
-            <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-neutral-500">// POPULAR BRANDS</h4>
+            <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-neutral-500">{"//"} POPULAR BRANDS</h4>
             <ul className="space-y-2 text-xs font-semibold text-neutral-400">
-              <li><a href="/brands" className="hover:text-[#79b947] transition-colors">Revolt Motors</a></li>
-              <li><a href="/brands" className="hover:text-[#79b947] transition-colors">Matter Energy</a></li>
-              <li><a href="/brands" className="hover:text-[#79b947] transition-colors">Oben Electric</a></li>
-              <li><a href="/brands" className="hover:text-[#79b947] transition-colors">Tork Motors</a></li>
+              <li><Link href="/brands" className="hover:text-[#79b947] transition-colors">Revolt Motors</Link></li>
+              <li><Link href="/brands" className="hover:text-[#79b947] transition-colors">Matter Energy</Link></li>
+              <li><Link href="/brands" className="hover:text-[#79b947] transition-colors">Oben Electric</Link></li>
+              <li><Link href="/brands" className="hover:text-[#79b947] transition-colors">Tork Motors</Link></li>
             </ul>
           </div>
 
-          {/* Column 4: Contact Support */}
+          {/* Column 4: Dynamic Contact Form */}
           <div className="space-y-3">
-            <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-neutral-500">// CONTACT SUPPORT</h4>
-            <div className="space-y-1.5 text-xs font-semibold text-neutral-400">
-              <p className="text-white font-bold text-[13px]">+91 63505-71635</p>
-              <p className="text-neutral-500">
-                <a href="mailto:info@evbike.com" className="hover:text-[#79b947] transition-colors">info@evbike.com</a>
-              </p>
-            </div>
+            <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-neutral-400">{"//"} Contact Us</h4>
+            <form ref={formRef} onSubmit={handleContactSubmit} className="space-y-2">
+              <input
+                type="text"
+                name="from_name"
+                placeholder="Name *"
+                required
+                className="w-full bg-[#1b253b] border border-transparent text-[11px] rounded-lg p-2 text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-700"
+              />
+              <input
+                type="email"
+                name="reply_to"
+                placeholder="Email *"
+                required
+                className="w-full bg-[#1b253b] border border-transparent text-[11px] rounded-lg p-2 text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-700"
+              />
+              <textarea
+                name="message"
+                placeholder="Message *"
+                required
+                rows={2}
+                className="w-full bg-[#1b253b] border border-transparent text-[11px] rounded-lg p-2 text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-700 resize-none"
+              />
+              <button
+                type="submit"
+                className="block w-full text-center text-[10px] font-mono font-bold uppercase bg-white text-black p-2 rounded-lg hover:bg-neutral-200 transition-colors"
+              >
+                Submit Query
+              </button>
+            </form>
           </div>
 
         </div>
@@ -382,7 +430,7 @@ export default function ComparePage() {
         {/* Bottom Copyright Bar */}
         <div className="max-w-7xl mx-auto px-6 py-6 border-t border-neutral-900/60 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] font-mono text-neutral-600 uppercase tracking-wider">
           <div>© 2026 EV.BIKE MATRIX MEDIA. ALL RIGHTS RESERVED.</div>
-          <div className="text-neutral-500 font-sans font-bold">MADE FOR INDIA'S EV REV</div>
+          <div className="text-neutral-500 font-sans font-bold">MADE FOR INDIA&apos;S EV REV</div>
         </div>
       </footer>
 

@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
+import Link from 'next/link';
+import emailjs from '@emailjs/browser';
 
 // Indian Market Live Real-Time EV Two-Wheeler Database
 interface EVBike {
@@ -34,6 +36,29 @@ export default function FindEVPage() {
   const [speedFilter, setSpeedFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
+  // EmailJS Contact Form Logic for Find EV Page
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Contact Form Submitting...");
+    if (!formRef.current) return;
+
+    try {
+      await emailjs.sendForm(
+        'service_3zqkomo',
+        'template_ywylu57',
+        formRef.current,
+        'olk423PwMI8botT3E'
+      );
+      alert("Query sent successfully! 👍");
+      formRef.current.reset();
+    } catch (err) {
+      console.error("EmailJS Error:", err);
+      alert("Error sending message. ❌");
+    }
+  };
+
   const brandOptions = ["Revolt Motors", "Matter Energy", "Oben Electric", "Tork Motors", "Ola Electric", "Ather Energy"];
   const bodyTypes: { label: string; icon: string }[] = [
     { label: "Scooter", icon: "🛵" },
@@ -63,25 +88,22 @@ export default function FindEVPage() {
     setSearchQuery('');
   };
 
-  // Complex multi-layer dynamic execution pipeline
-  const filteredBikes = useMemo(() => {
-    return EV_BIKE_DATABASE.filter(bike => {
-      if (bike.price > maxPrice) return false;
-      if (selectedBrands.length > 0 && !selectedBrands.includes(bike.brand)) return false;
-      if (selectedBodyTypes.length > 0 && !selectedBodyTypes.includes(bike.bodyType)) return false;
-      if (bike.range < minRange) return false;
+  const filteredBikes = EV_BIKE_DATABASE.filter(bike => {
+    if (bike.price > maxPrice) return false;
+    if (selectedBrands.length > 0 && !selectedBrands.includes(bike.brand)) return false;
+    if (selectedBodyTypes.length > 0 && !selectedBodyTypes.includes(bike.bodyType)) return false;
+    if (bike.range < minRange) return false;
 
-      if (speedFilter === 'Fast' && bike.chargingTime > 3) return false;
-      if (speedFilter === 'Normal' && bike.chargingTime <= 3) return false;
+    if (speedFilter === 'Fast' && bike.chargingTime > 3) return false;
+    if (speedFilter === 'Normal' && bike.chargingTime <= 3) return false;
 
-      if (searchQuery.trim() !== '') {
-        const query = searchQuery.toLowerCase();
-        const matchesQuery = bike.name.toLowerCase().includes(query) || bike.brand.toLowerCase().includes(query);
-        if (!matchesQuery) return false;
-      }
-      return true;
-    });
-  }, [maxPrice, selectedBrands, selectedBodyTypes, minRange, speedFilter, searchQuery]);
+    if (searchQuery.trim() !== '') {
+      const query = searchQuery.toLowerCase();
+      const matchesQuery = bike.name.toLowerCase().includes(query) || bike.brand.toLowerCase().includes(query);
+      if (!matchesQuery) return false;
+    }
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white font-sans antialiased flex flex-col justify-between">
@@ -91,21 +113,21 @@ export default function FindEVPage() {
         <div className="max-w-[1400px] mx-auto px-6 h-24 flex items-center justify-between">
 
           {/* Logo Section */}
-          <a href="/" className="flex items-center gap-3 cursor-pointer">
+          <Link href="/" className="flex items-center gap-3 cursor-pointer">
             <img src="/logo.png" alt="ev.BIKE Logo" className="h-9 w-auto object-contain" />
             <span className="text-xl font-black tracking-tighter uppercase">
               ev.<span className="text-[#79b947]">bike</span>
             </span>
-          </a>
+          </Link>
 
           {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-[0.15em]">
-            <a href="/" className="text-neutral-400 hover:text-white transition-colors">Home</a>
-            <a href="/compare" className="text-neutral-400 hover:text-white transition-colors">Comparison</a>
-            <a href="/brands" className="text-neutral-400 hover:text-white transition-colors">Brands</a>
-            <a href="/calculator" className="text-neutral-400 hover:text-white transition-colors">EV Calculator</a>
-            <a href="/Find-EV" className="text-white border-b border-white/40 pb-0.5">Find-EV</a>
-            <a href="/charging-stations" className="text-neutral-400 hover:text-white transition-colors">Charging Stations</a>
+            <Link href="/" className="text-neutral-400 hover:text-white transition-colors">Home</Link>
+            <Link href="/compare" className="text-neutral-400 hover:text-white transition-colors">Comparison</Link>
+            <Link href="/brands" className="text-neutral-400 hover:text-white transition-colors">Brands</Link>
+            <Link href="/calculator" className="text-neutral-400 hover:text-white transition-colors">EV Calculator</Link>
+            <Link href="/Find-EV" className="text-white border-b border-white/40 pb-0.5">Find-EV</Link>
+            <Link href="/charging-stations" className="text-neutral-400 hover:text-white transition-colors">Charging Stations</Link>
           </nav>
 
           {/* Get Started Button */}
@@ -228,7 +250,7 @@ export default function FindEVPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#111111] border border-neutral-900 rounded-2xl p-5">
             <div>
               <h1 className="text-xl font-black tracking-tight text-neutral-100">Search Results</h1>
-              <p className="text-neutral-500 text-xs font-medium mt-0.5 font-mono">// {filteredBikes.length} VEHICLES MATCHING YOUR SCHEME</p>
+              <p className="text-neutral-500 text-xs font-medium mt-0.5 font-mono">{"//"} {filteredBikes.length} VEHICLES MATCHING YOUR SCHEME</p>
             </div>
 
             <div className="relative w-full md:w-72">
@@ -284,21 +306,12 @@ export default function FindEVPage() {
                     </div>
 
                     {/* View Details Interactive Redirection Routing Buttons */}
-                    <button
-                      onClick={() => {
-                        const currentBike = bike as any;
-                        const targetId = currentBike["S.No."] || currentBike.id || currentBike["s_no"];
-
-                        if (targetId) {
-                          window.location.href = `/bike/${targetId}`;
-                        } else {
-                          alert("S.No. Key field mapping clear nahi hai client side par!");
-                        }
-                      }}
+                    <Link
+                      href={`/bike/${bike.id}`}
                       className="block w-full text-center text-xs font-bold bg-[#79b947] hover:bg-[#68a33b] text-neutral-950 py-3.5 rounded-xl tracking-wider transition-all uppercase font-mono shadow-lg"
                     >
                       View Full Details
-                    </button>
+                    </Link>
                   </div>
 
                 </div>
@@ -324,32 +337,70 @@ export default function FindEVPage() {
             <div className="md:col-span-4 flex flex-col gap-4">
               <span className="text-[#79b947] text-2xl font-black tracking-tighter">EV.BIKE</span>
               <p className="text-xs text-neutral-500 leading-relaxed max-w-xs">
-                India's most trusted platform for finding, comparing, and analyzing electric vehicles within your budget.
+                India&apos;s most trusted platform for finding, comparing, and analyzing electric vehicles within your budget.
               </p>
             </div>
 
             <div className="md:col-span-2 md:col-start-6 flex flex-col gap-2.5">
-              <h3 className="text-[11px] font-bold uppercase tracking-widest text-neutral-300 mb-1 font-mono">// QUICK LINKS</h3>
-              <a href="/" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Home</a>
-              <a href="/compare" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Comparison</a>
-              <a href="/brands" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Brands</a>
-              <a href="/calculator" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">EV Calculator</a>
-              <a href="/Find-EV" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Find-EV</a>
-              <a href="/charging-stations" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Charging Stations</a>
+              <h3 className="text-[11px] font-bold uppercase tracking-widest text-neutral-300 mb-1 font-mono">{"//"} QUICK LINKS</h3>
+              <Link href="/" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Home</Link>
+              <Link href="/compare" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Comparison</Link>
+              <Link href="/brands" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Brands</Link>
+              <Link href="/calculator" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">EV Calculator</Link>
+              <Link href="/Find-EV" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Find-EV</Link>
+              <Link href="/charging-stations" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Charging Stations</Link>
             </div>
 
             <div className="md:col-span-2 flex flex-col gap-2.5">
-              <h3 className="text-[11px] font-bold uppercase tracking-widest text-neutral-300 mb-1 font-mono">// POPULAR BRANDS</h3>
-              <a href="/brands/revolt-motors" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Revolt Motors</a>
-              <a href="/brands/matter-energy" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Matter Energy</a>
-              <a href="/brands/oben-electric" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Oben Electric</a>
-              <a href="/brands/tork-motors" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Tork Motors</a>
+              <h3 className="text-[11px] font-bold uppercase tracking-widest text-neutral-300 mb-1 font-mono">{"//"} POPULAR BRANDS</h3>
+              <Link href="/brands/revolt-motors" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Revolt Motors</Link>
+              <Link href="/brands/matter-energy" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Matter Energy</Link>
+              <Link href="/brands/oben-electric" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Oben Electric</Link>
+              <Link href="/brands/tork-motors" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">Tork Motors</Link>
             </div>
 
+            {/* Column 4: Dynamic Contact Form */}
             <div className="md:col-span-3 flex flex-col gap-2.5">
-              <h3 className="text-[11px] font-bold uppercase tracking-widest text-neutral-300 mb-1 font-mono">// CONTACT SUPPORT</h3>
-              <a href="tel:+916350571635" className="text-xs text-neutral-200 font-medium tracking-wide hover:text-[#79b947] transition-colors w-fit">+91 63505-71635</a>
-              <a href="mailto:info@evbike.com" className="text-xs text-neutral-500 hover:text-white transition-colors w-fit">info@evbike.com</a>
+              <h3 className="text-[11px] font-bold uppercase tracking-widest text-neutral-300 mb-1 font-mono">{"//"} CONTACT US</h3>
+              <form ref={formRef} onSubmit={handleContactSubmit} className="space-y-2">
+                <div>
+                  <input
+                    type="text"
+                    name="from_name"
+                    placeholder="Name *"
+                    required
+                    className="w-full bg-[#1b253b] border border-transparent text-[11px] rounded-lg p-2.5 text-neutral-200 focus:outline-none focus:border-neutral-700 transition-all placeholder-neutral-500 font-sans font-medium shadow-inner"
+                  />
+                </div>
+
+                <div>
+                  <input
+                    type="email"
+                    name="reply_to"
+                    placeholder="Email *"
+                    required
+                    className="w-full bg-[#1b253b] border border-transparent text-[11px] rounded-lg p-2.5 text-neutral-200 focus:outline-none focus:border-neutral-700 transition-all placeholder-neutral-500 font-sans font-medium shadow-inner"
+                  />
+                </div>
+
+                <div>
+                  <textarea
+                    name="message"
+                    placeholder="Query / Message *"
+                    rows={2}
+                    required
+                    className="w-full bg-[#1b253b] border border-transparent text-[11px] rounded-lg p-2.5 text-neutral-200 focus:outline-none focus:border-neutral-700 transition-all placeholder-neutral-500 resize-none font-sans font-medium shadow-inner"
+                  ></textarea>
+                </div>
+
+                {/* Clean White Theme Button - Exact Matching with top SUBSCRIBE button */}
+                <button
+                  type="submit"
+                  className="block w-full text-center text-[10px] font-mono font-bold uppercase bg-white text-black py-2.5 rounded-lg tracking-widest transition-all duration-300 shadow-md hover:bg-[#79b947] hover:text-white"
+                >
+                  Submit Query
+                </button>
+              </form>
             </div>
 
           </div>

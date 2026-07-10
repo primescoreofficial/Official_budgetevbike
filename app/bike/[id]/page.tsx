@@ -7,7 +7,6 @@ import Link from 'next/link';
 export default function BikeDetailPage({ params }: { params: Promise<{ id: string }> | { id: string } }) {
     const [bike, setBike] = useState<any | null>(null);
     const [similarBikes, setSimilarBikes] = useState<any[]>([]);
-    const [brandBikes, setBrandBikes] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [dbError, setDbError] = useState<string | null>(null);
 
@@ -48,21 +47,11 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
 
                     if (recs) setSimilarBikes(recs);
 
-                    // Fetch More Vehicles From the Same Brand/OEM (Limit 4)
-                    const currentBrand = data['Brand / OEM'] || data['Brand/OEM'] || 'Ola Electric';
-                    const { data: brandDocs } = await supabase
-                        .from('electric_bikes')
-                        .select('*')
-                        .eq('Brand/OEM', currentBrand)
-                        .not('"S.No."', 'eq', numericId)
-                        .limit(4);
-
-                    if (brandDocs) setBrandBikes(brandDocs);
                 } else {
                     setDbError(`Database mein Serial Number ${targetId} ka data nahi mila.`);
                 }
-            } catch (err: any) {
-                setDbError(err.message || "Technical connectivity framework failure.");
+            } catch (err: unknown) {
+                setDbError(err instanceof Error ? err.message : "Technical connectivity framework failure.");
             } finally {
                 setLoading(false);
             }
@@ -294,13 +283,13 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
                             EV<span className="text-[#79b947]">.BIKE</span>
                         </div>
                         <p className="text-neutral-500 leading-relaxed max-w-sm text-[11px]">
-                            India's most trusted platform for finding, comparing, and analyzing electric vehicles within your budget.
+                            India&apos;s most trusted platform for finding, comparing, and analyzing electric vehicles within your budget.
                         </p>
                     </div>
 
                     {/* COLUMN 2 */}
                     <div className="md:col-span-2 flex flex-col gap-2">
-                        <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider mb-1">// QUICK LINKS</span>
+                        <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider mb-1">{"//"} QUICK LINKS</span>
                         <Link href="/" className="hover:text-[#79b947] transition-colors">Home</Link>
                         <Link href="/" className="hover:text-[#79b947] transition-colors">Comparison</Link>
                         <Link href="/" className="hover:text-[#79b947] transition-colors">Brands</Link>
@@ -311,7 +300,7 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
 
                     {/* COLUMN 3 */}
                     <div className="md:col-span-3 flex flex-col gap-2">
-                        <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider mb-1">// POPULAR BRANDS</span>
+                        <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider mb-1">{"//"} POPULAR BRANDS</span>
                         <span className="hover:text-[#79b947] cursor-pointer transition-colors">Revolt Motors</span>
                         <span className="hover:text-[#79b947] cursor-pointer transition-colors">Matter Energy</span>
                         <span className="hover:text-[#79b947] cursor-pointer transition-colors">Oben Electric</span>
@@ -320,7 +309,7 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
 
                     {/* COLUMN 4 */}
                     <div className="md:col-span-3 flex flex-col gap-2">
-                        <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider mb-1">// CONTACT SUPPORT</span>
+                        <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider mb-1">{"//"} CONTACT SUPPORT</span>
                         <p className="text-neutral-300 font-bold">+91 63506-71636</p>
                         <a href="mailto:info@evbike.com" className="hover:text-[#79b947] transition-colors text-neutral-400 break-all">info@evbike.com</a>
                     </div>
@@ -330,7 +319,7 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
                 {/* COPYRIGHT TRACK */}
                 <div className="max-w-7xl mx-auto px-4 md:px-8 border-t border-neutral-900/60 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center text-[10px] text-neutral-600 gap-2">
                     <p>© 2026 EV.BIKE MATRIX MEDIA. ALL RIGHTS RESERVED.</p>
-                    <p className="tracking-widest uppercase text-neutral-500 text-[9px]">MADE FOR INDIA'S EV REVOLUTION</p>
+                    <p className="tracking-widest uppercase text-neutral-500 text-[9px]">MADE FOR INDIA&apos;S EV REVOLUTION</p>
                 </div>
             </footer>
 
