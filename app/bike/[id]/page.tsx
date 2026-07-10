@@ -102,7 +102,19 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
     const displayPrice = `₹${estimatedPrice.toLocaleString('en-IN')}*`;
 
     // 📸 TRUE HOME CARD IMAGE RESOLVER PATH
-    const finalImageUrl = getBikeImageUrl(brandName, modelName);
+    let finalImageUrl = getBikeImageUrl(brandName, modelName);
+    if (brandName === 'Ola Electric') {
+        const checkStr = `${brandName} ${modelName} ${variantName}`.toLowerCase();
+        if (checkStr.includes('s1 air')) {
+            finalImageUrl = '/EV_Bike/Ola Electric/Ola Electric S1 Air.png';
+        } else if (checkStr.includes('s1 pro')) {
+            finalImageUrl = '/EV_Bike/Ola Electric/Ola Electric S1 Pro.png';
+        } else if (checkStr.includes('s1x+') || checkStr.includes('s1 x+')) {
+            finalImageUrl = '/EV_Bike/Ola Electric/Ola Electric S1X+.png';
+        } else if (checkStr.includes('s1x') || checkStr.includes('s1 x')) {
+            finalImageUrl = '/EV_Bike/Ola Electric/Ola Electric S1X.avif';
+        }
+    }
 
     return (
         <div className="bg-[#0b0c10] min-h-screen text-neutral-200 font-sans antialiased flex flex-col justify-between">
@@ -233,24 +245,45 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
                             return (
                                 <div key={sId} className="bg-neutral-900/40 border border-neutral-800/60 rounded-xl p-4 flex flex-col justify-between shadow-md hover:border-neutral-700/80 transition-all">
                                     <div className="flex items-center justify-center bg-neutral-950/40 rounded-lg p-3 min-h-[140px] mb-3">
-                                        <img
-                                            src={`https://bwneyzbsohxwlgdludby.supabase.co/storage/v1/object/public/bikes/${sId}.png`}
-                                            className="max-h-[100px] object-contain"
-                                            alt={`${sb['Brand / OEM'] || ''} ${sb['Model Name'] || ''}`}
-                                            onError={(e) => {
-                                                const current = e.currentTarget.src;
-                                                // Loop rokne ke liye check lagaya hai
-                                                if (!current.includes('stop=true')) {
-                                                    // Agar main URL kaam na kare toh local standard folder try karega
-                                                    const bName = String(sb['Brand / OEM'] || '').trim();
-                                                    const mName = String(sb['Model Name'] || '').trim();
-                                                    e.currentTarget.src = `/EV_Bikes/${bName}/${mName}.png?stop=true`;
-                                                } else {
-                                                    // Agar dono jagah na mile toh layout kharab hone ke bajay broken icon gayab ho jayega
-                                                    e.currentTarget.style.display = 'none';
+                                        {(() => {
+                                            const sBrand = sb['Brand / OEM'] || sb['Brand/OEM'] || '';
+                                            const sModel = sb['Model Name'] || '';
+                                            const sVariant = sb['Variant Name'] || '';
+                                            let sImg = getBikeImageUrl(sBrand, sModel);
+                                            if (sBrand === 'Ola Electric') {
+                                                const checkStr = `${sBrand} ${sModel} ${sVariant}`.toLowerCase();
+                                                if (checkStr.includes('s1 air')) {
+                                                    sImg = '/EV_Bike/Ola Electric/Ola Electric S1 Air.png';
+                                                } else if (checkStr.includes('s1 pro')) {
+                                                    sImg = '/EV_Bike/Ola Electric/Ola Electric S1 Pro.png';
+                                                } else if (checkStr.includes('s1x+') || checkStr.includes('s1 x+')) {
+                                                    sImg = '/EV_Bike/Ola Electric/Ola Electric S1X+.png';
+                                                } else if (checkStr.includes('s1x') || checkStr.includes('s1 x')) {
+                                                    sImg = '/EV_Bike/Ola Electric/Ola Electric S1X.avif';
                                                 }
-                                            }}
-                                        />
+                                            }
+                                            return (
+                                                <img
+                                                    src={sImg}
+                                                    className="max-h-[100px] object-contain"
+                                                    alt={`${sb['Brand / OEM'] || ''} ${sb['Model Name'] || ''}`}
+                                                    onError={(e) => {
+                                                        const current = e.currentTarget.src;
+                                                        // Loop rokne ke liye check lagaya hai
+                                                        if (!current.includes('stop=true')) {
+                                                            // Agar main URL kaam na kare toh local standard folder try karega
+                                                            const bName = String(sb['Brand / OEM'] || '').trim();
+                                                            const mName = String(sb['Model Name'] || '').trim();
+                                                            e.currentTarget.src = `/EV_Bike/${bName}/${mName}.png?stop=true`;
+                                                        } else {
+                                                            // Agar dono jagah na mile toh layout kharab hone ke bajay broken icon gayab ho jayega
+                                                            e.currentTarget.style.display = 'none';
+                                                        }
+                                                    }}
+                                                />
+                                            );
+                                        })()}
+
                                     </div>
 
                                     <div>
