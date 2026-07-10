@@ -430,9 +430,9 @@ export default function Home() {
 
         <div className="grid md:grid-cols-3 gap-8">
           {((reviews && reviews.length > 0 ? reviews : [
-            { id: 1, tag: "BUDGET EV-BIKE", date: "June 2026", title: "BudgetEV Bike: Real-World Performance & Heavy Load City Range Test.", description: "Humne is budget electric bike ko bhari traffic aur alag-alag roads par test kiya hai.", localImage: "/EV_Bike/Ampere/Ampere Magnus.png" },
-            { id: 2, tag: "BUDGET EV-BIKE", date: "May 2026", title: "Why BudgetEV Bike is the Best Pocket-Friendly Option in 2026.", description: "Low maintenance costs aur behtareen battery backup ke sath ye bike daily office ke liye best hai.", localImage: "/EV_Bike/Ather Energy/Anther Energy 450X.png" },
-            { id: 3, tag: "BUDGET EV-BIKE", date: "April 2026", title: "BudgetEV Bike Detailed Review: High Comfort & Smart Features.", description: "Is price range mein digital console aur smooth suspension jaise premium features ka breakdown.", localImage: "/EV_Bike/Atumobile/Atumobile AtumVader.png" }
+            { id: 1, tag: "BUDGET EV-BIKE", date: "June 2026", title: "BudgetEV Bike: Real-World Performance & Heavy Load City Range Test.", description: "Our rigorous multi-stop city road test reveals an exceptionally efficient range performance and motor stability even under heavy payload capacities in peak traffic conditions.", localImage: "/EV_Bike/Ampere/Ampere Magnus.png" },
+            { id: 2, tag: "BUDGET EV-BIKE", date: "May 2026", title: "Why BudgetEV Bike is the Best Pocket-Friendly Option in 2026.", description: "A detailed cost-to-ownership analysis firmly establishes this model as the ultimate budget companion, offering significant savings on daily commutes and battery maintenance.", localImage: "/EV_Bike/Ather Energy/Anther Energy 450X.png" },
+            { id: 3, tag: "BUDGET EV-BIKE", date: "April 2026", title: "BudgetEV Bike Detailed Review: High Comfort & Smart Features.", description: "While most entry-level electric two-wheelers compromise heavily on ergonomics, this breakdown highlights how it seamlessly integrates smart console navigation with superior riding comfort.", localImage: "/EV_Bike/Atumobile/Atumobile AtumVader.png" }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ])).map((r: any, index: number) => (
 
