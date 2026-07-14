@@ -456,11 +456,11 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
                     <div className="md:col-span-2 flex flex-col gap-2">
                         <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider mb-1">{"//"} QUICK LINKS</span>
                         <Link href="/" className="hover:text-[#79b947] transition-colors">Home</Link>
-                        <Link href="/" className="hover:text-[#79b947] transition-colors">Comparison</Link>
-                        <Link href="/" className="hover:text-[#79b947] transition-colors">Brands</Link>
-                        <Link href="/" className="hover:text-[#79b947] transition-colors">EV Calculator</Link>
-                        <Link href="/" className="hover:text-[#79b947] transition-colors">Find-EV</Link>
-                        <Link href="/" className="hover:text-[#79b947] transition-colors">Charging Stations</Link>
+                        <Link href="/compare" className="hover:text-[#79b947] transition-colors">Comparison</Link>
+                        <Link href="/brands" className="hover:text-[#79b947] transition-colors">Brands</Link>
+                        <Link href="/calculator" className="hover:text-[#79b947] transition-colors">EV Calculator</Link>
+                        <Link href="/Find-EV" className="hover:text-[#79b947] transition-colors">Find-EV</Link>
+                        <Link href="/charging-stations" className="hover:text-[#79b947] transition-colors">Charging Stations</Link>
                     </div>
 
                     {/* COLUMN 3 */}
