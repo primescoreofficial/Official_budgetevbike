@@ -4,15 +4,42 @@ import React, { useEffect, useState } from 'react';
 import { supabase, getBikeImageUrl } from '@/lib/supabase';
 import Link from 'next/link';
 
+// ─── LOCAL VEHICLE DATABASE (mirrored from Find-EV page) ───────────────────
+interface EVBike {
+    id: number;
+    name: string;
+    brand: string;
+    variant: string;
+    price: number; // In Lakhs
+    battery: string;
+    bodyType: 'Hatchback' | 'SUV / MUV' | 'Sedan' | 'Compact' | 'Commuter' | 'Sports' | 'Scooter';
+    range: number; // In KM
+    chargingTime: number; // In Hours
+    image: string;
+}
+
+const EV_BIKE_DATABASE: EVBike[] = [
+    { id: 1, name: "Revolt RV400", brand: "Revolt Motors", variant: "BRRC PREMIUM STAGE", price: 1.45, battery: "3.24 kWh", bodyType: "Commuter", range: 150, chargingTime: 4.5, image: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=400&q=80" },
+    { id: 2, name: "Matter AERA 5000", brand: "Matter Energy", variant: "4-SPEED ACTIVE GEAR", price: 1.74, battery: "5.0 kWh", bodyType: "Sports", range: 125, chargingTime: 5, image: "https://images.unsplash.com/photo-1609630875171-b1321377ee65?auto=format&fit=crop&w=400&q=80" },
+    { id: 3, name: "Oben Rorr", brand: "Oben Electric", variant: "LFP HIGH PERFORMANCE", price: 1.50, battery: "4.4 kWh", bodyType: "Sports", range: 187, chargingTime: 2, image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=400&q=80" },
+    { id: 4, name: "Tork Kratos R", brand: "Tork Motors", variant: "ECO SYNC AXIAL", price: 1.68, battery: "4.0 kWh", bodyType: "Commuter", range: 180, chargingTime: 4, image: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=400&q=80" },
+    { id: 5, name: "Ola S1 Pro Gen 2", brand: "Ola Electric", variant: "HYPERDRIVE PERFORMANCE", price: 1.40, battery: "4.0 kWh", bodyType: "Scooter", range: 195, chargingTime: 6.5, image: "https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?auto=format&fit=crop&w=400&q=80" },
+    { id: 6, name: "Ather 450X Apex", brand: "Ather Energy", variant: "WARP PLUS WARP MODE", price: 1.75, battery: "3.7 kWh", bodyType: "Scooter", range: 157, chargingTime: 5.5, image: "https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&w=400&q=80" }
+];
+
 export default function BikeDetailPage({ params }: { params: Promise<{ id: string }> | { id: string } }) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [bike, setBike] = useState<any | null>(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [similarBikes, setSimilarBikes] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [dbError, setDbError] = useState<string | null>(null);
+    const [isLocalData, setIsLocalData] = useState(false);
 
     useEffect(() => {
         async function fetchBikeDetail() {
             try {
+                // 1. Destructure / await params to get the id
                 const resolvedParams = params instanceof Promise ? await params : params;
                 const targetId = resolvedParams?.id;
 
@@ -24,31 +51,47 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
 
                 const numericId = parseInt(targetId, 10);
 
-                // Fetch everything dynamically matching the S.No.
-                const { data, error } = await supabase
-                    .from('electric_bikes')
-                    .select('*')
-                    .eq('"S.No."', numericId)
-                    .maybeSingle();
+                // 2. First check the local EV_BIKE_DATABASE for a matching vehicle
+                const localVehicle = EV_BIKE_DATABASE.find(v => v.id === numericId);
 
-                if (error) {
-                    setDbError(error.message);
-                } else if (data) {
-                    setBike(data);
+                if (localVehicle) {
+                    // Found in local dataset — use it directly
+                    setBike(localVehicle);
+                    setIsLocalData(true);
 
-                    // Fetch Similar Alternative Electric Vehicles based on Segment (Limit 4)
-                    const currentSegment = data['Segment'] || 'Mass Market';
-                    const { data: recs } = await supabase
+                    // Get similar vehicles from local array (same bodyType, exclude current)
+                    const similar = EV_BIKE_DATABASE.filter(
+                        v => v.bodyType === localVehicle.bodyType && v.id !== localVehicle.id
+                    );
+                    setSimilarBikes(similar.length > 0 ? similar : EV_BIKE_DATABASE.filter(v => v.id !== localVehicle.id).slice(0, 4));
+                } else {
+                    // 3. Fallback: Fetch from Supabase matching the S.No.
+                    const { data, error } = await supabase
                         .from('electric_bikes')
                         .select('*')
-                        .eq('Segment', currentSegment)
-                        .not('"S.No."', 'eq', numericId)
-                        .limit(4);
+                        .eq('"S.No."', numericId)
+                        .maybeSingle();
 
-                    if (recs) setSimilarBikes(recs);
+                    if (error) {
+                        setDbError(error.message);
+                    } else if (data) {
+                        setBike(data);
+                        setIsLocalData(false);
 
-                } else {
-                    setDbError(`Database mein Serial Number ${targetId} ka data nahi mila.`);
+                        // Fetch Similar Alternative Electric Vehicles based on Segment (Limit 4)
+                        const currentSegment = data['Segment'] || 'Mass Market';
+                        const { data: recs } = await supabase
+                            .from('electric_bikes')
+                            .select('*')
+                            .eq('Segment', currentSegment)
+                            .not('"S.No."', 'eq', numericId)
+                            .limit(4);
+
+                        if (recs) setSimilarBikes(recs);
+
+                    } else {
+                        setDbError(`Database mein Serial Number ${targetId} ka data nahi mila.`);
+                    }
                 }
             } catch (err: unknown) {
                 setDbError(err instanceof Error ? err.message : "Technical connectivity framework failure.");
@@ -81,38 +124,67 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
         );
     }
 
-    // 🔄 DATABASE COLUMN MAPPING DIRECT FROM YOUR TABLE EDITOR
-    const brandName = bike['Brand / OEM'] || bike['Brand/OEM'] || 'Ola Electric';
-    const modelName = bike['Model Name'] || 'S1X';
-    const variantName = bike['Variant Name'] || '';
-    const segmentValue = bike['Segment'] || 'Mass Market';
+    // ─── UNIFIED DATA RESOLVER ─────────────────────────────────────────
+    // Maps both local EVBike shape and Supabase row shape to common display variables
 
-    const rangeValue = bike['Certified Range (km)'] || 'N/A';
-    const speedValue = bike['Top Speed (km/h)'] || 'N/A';
-    const batteryValue = bike['Battery Capacity (kWh)'] || 'N/A';
-    const bikeId = bike['S.No.'] || 1;
+    let brandName: string;
+    let modelName: string;
+    let variantName: string;
+    let segmentValue: string;
+    let rangeValue: string | number;
+    let speedValue: string | number;
+    let batteryValue: string | number;
+    let bikeId: number;
+    let displayPrice: string;
+    let finalImageUrl: string;
 
-    // 💰 PURE DYNAMIC PRICE RESOLVER (Matches homepage dynamic mapping)
-    const range = Number(bike['Certified Range (km)']) || 0;
-    const topSpeed = Number(bike['Top Speed (km/h)']) || 0;
-    const battery = Number(bike['Battery Capacity (kWh)']) || 2;
+    if (isLocalData) {
+        // ── LOCAL DATA SHAPE ──
+        const localBike = bike as EVBike;
+        brandName = localBike.brand;
+        modelName = localBike.name;
+        variantName = localBike.variant;
+        segmentValue = localBike.bodyType;
+        rangeValue = localBike.range;
+        speedValue = 'N/A'; // Local dataset does not have top speed
+        batteryValue = localBike.battery;
+        bikeId = localBike.id;
+        displayPrice = `₹${localBike.price.toFixed(2)} Lakh*`;
+        finalImageUrl = localBike.image;
+    } else {
+        // ── SUPABASE DATA SHAPE ──
+        brandName = bike['Brand / OEM'] || bike['Brand/OEM'] || 'Ola Electric';
+        modelName = bike['Model Name'] || 'S1X';
+        variantName = bike['Variant Name'] || '';
+        segmentValue = bike['Segment'] || 'Mass Market';
 
-    let estimatedPrice = 80000 + (range * 300) + (topSpeed * 400) + (battery * 5000);
-    estimatedPrice = Math.round(estimatedPrice / 1000) * 1000;
-    const displayPrice = `₹${estimatedPrice.toLocaleString('en-IN')}*`;
+        rangeValue = bike['Certified Range (km)'] || 'N/A';
+        speedValue = bike['Top Speed (km/h)'] || 'N/A';
+        batteryValue = bike['Battery Capacity (kWh)'] || 'N/A';
+        bikeId = bike['S.No.'] || 1;
 
-    // 📸 TRUE HOME CARD IMAGE RESOLVER PATH
-    let finalImageUrl = getBikeImageUrl(brandName, modelName);
-    if (brandName === 'Ola Electric') {
-        const checkStr = `${brandName} ${modelName} ${variantName}`.toLowerCase();
-        if (checkStr.includes('s1 air')) {
-            finalImageUrl = '/EV_Bike/Ola Electric/Ola Electric S1 Air.png';
-        } else if (checkStr.includes('s1 pro')) {
-            finalImageUrl = '/EV_Bike/Ola Electric/Ola Electric S1 Pro.png';
-        } else if (checkStr.includes('s1x+') || checkStr.includes('s1 x+')) {
-            finalImageUrl = '/EV_Bike/Ola Electric/Ola Electric S1X+.png';
-        } else if (checkStr.includes('s1x') || checkStr.includes('s1 x')) {
-            finalImageUrl = '/EV_Bike/Ola Electric/Ola Electric S1X.avif';
+        // 💰 PURE DYNAMIC PRICE RESOLVER (Matches homepage dynamic mapping)
+        const range = Number(bike['Certified Range (km)']) || 0;
+        const topSpeed = Number(bike['Top Speed (km/h)']) || 0;
+        const battery = Number(bike['Battery Capacity (kWh)']) || 2;
+
+        let estimatedPrice = 80000 + (range * 300) + (topSpeed * 400) + (battery * 5000);
+        estimatedPrice = Math.round(estimatedPrice / 1000) * 1000;
+        displayPrice = `₹${estimatedPrice.toLocaleString('en-IN')}*`;
+
+        // 📸 TRUE HOME CARD IMAGE RESOLVER PATH
+        finalImageUrl = getBikeImageUrl(brandName, modelName);
+        if (brandName === 'Ola Electric') {
+            const checkStr = `${brandName} ${modelName} ${variantName}`.toLowerCase();
+            if (checkStr.includes('s1 air')) {
+                finalImageUrl = '/EV_Bike/Ola Electric/Ola Electric S1 Air.png';
+            } else if (checkStr.includes('s1 pro')) {
+                finalImageUrl = '/EV_Bike/Ola Electric/Ola Electric S1 Pro.png';
+            } else if (checkStr.includes('s1x+') || checkStr.includes('s1 x+')) {
+                finalImageUrl = '/EV_Bike/Ola Electric/Ola Electric S1X+.png';
+            } else if (checkStr.includes('s1x') || checkStr.includes('s1 x')) {
+                finalImageUrl = '/EV_Bike/Ola Electric/Ola Electric S1X.avif';
+            }
         }
     }
 
@@ -184,6 +256,12 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
                                 <span className="text-neutral-500 text-[10px] font-bold uppercase tracking-wider block">🆔 SERIAL NUMBER</span>
                                 <span className="text-white text-sm font-bold mt-1 block"># {bikeId}</span>
                             </div>
+                            {isLocalData && (
+                                <div>
+                                    <span className="text-neutral-500 text-[10px] font-bold uppercase tracking-wider block">⏱️ CHARGING TIME</span>
+                                    <span className="text-white text-sm font-bold mt-1 block">{(bike as EVBike).chargingTime} hrs</span>
+                                </div>
+                            )}
                         </div>
 
                         {/* 100% Dynamic Calculated Price Box */}
@@ -221,7 +299,7 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
                             The <span className="text-white font-bold">{brandName} {modelName} {variantName}</span> is engineered for optimal performance in urban commuting. Equipped with advanced smart connectivity features, robust battery management systems, and high efficiency, it stands out as a reliable choice in the {segmentValue} electric vehicle segment.
                         </p>
                         <p className="mt-3">
-                            With a certified range of <span className="text-[#79b947] font-bold">{rangeValue}</span> and a top speed of <span className="text-[#79b947] font-bold">{speedValue}</span>, this model ensures a cost-effective, eco-friendly drive experience, requiring minimal maintenance while maximizing energy output via its <span className="text-white font-bold">{batteryValue}</span> power unit configuration.
+                            With a certified range of <span className="text-[#79b947] font-bold">{rangeValue}{typeof rangeValue === 'number' ? ' km' : ''}</span> and a top speed of <span className="text-[#79b947] font-bold">{speedValue}{typeof speedValue === 'number' ? ' km/h' : ''}</span>, this model ensures a cost-effective, eco-friendly drive experience, requiring minimal maintenance while maximizing energy output via its <span className="text-white font-bold">{batteryValue}</span> power unit configuration.
                         </p>
                     </div>
                 </div>
@@ -235,6 +313,35 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
                         {similarBikes && similarBikes.length > 0 ? similarBikes.map((sb) => {
+
+                            if (isLocalData) {
+                                // ── Render similar card from LOCAL data ──
+                                const localSb = sb as EVBike;
+                                return (
+                                    <div key={localSb.id} className="bg-neutral-900/40 border border-neutral-800/60 rounded-xl p-4 flex flex-col justify-between shadow-md hover:border-neutral-700/80 transition-all">
+                                        <div className="flex items-center justify-center bg-neutral-950/40 rounded-lg p-3 min-h-[140px] mb-3">
+                                            <img
+                                                src={localSb.image}
+                                                className="max-h-[100px] object-contain"
+                                                alt={`${localSb.brand} ${localSb.name}`}
+                                                onError={(e) => {
+                                                    e.currentTarget.style.display = 'none';
+                                                }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-sm font-bold text-white truncate">{localSb.brand} {localSb.name}</h3>
+                                            <p className="text-[11px] font-mono text-[#79b947] mt-0.5">{localSb.variant}</p>
+                                            <p className="text-xs font-mono font-bold text-neutral-400 mt-2">₹{localSb.price.toFixed(2)} Lakh*</p>
+                                        </div>
+                                        <Link href={`/bike/${localSb.id}`} className="mt-4 w-full text-center bg-neutral-800 hover:bg-neutral-700 text-white font-semibold text-[11px] py-2 rounded-md tracking-wide transition-colors block">
+                                            View Details
+                                        </Link>
+                                    </div>
+                                );
+                            }
+
+                            // ── Render similar card from SUPABASE data ──
                             const sId = sb['S.No.'];
                             const sRange = Number(sb['Certified Range (km)']) || 0;
                             const sSpeed = Number(sb['Top Speed (km/h)']) || 0;
