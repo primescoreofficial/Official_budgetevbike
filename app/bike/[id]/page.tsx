@@ -1,6 +1,6 @@
 'use client';
-
-import React, { useEffect, useState } from 'react';
+import emailjs from '@emailjs/browser';
+import React, { useEffect, useState, useRef } from 'react';
 import { supabase, getBikeImageUrl } from '@/lib/supabase';
 import Link from 'next/link';
 
@@ -36,6 +36,31 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
     const [dbError, setDbError] = useState<string | null>(null);
     const [isLocalData, setIsLocalData] = useState(false);
 
+    // EmailJS logic for Contact Form in this page's footer
+    const formRef = useRef<HTMLFormElement>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleContactSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!formRef.current || isSubmitting) return;
+
+        setIsSubmitting(true);
+        try {
+            await emailjs.sendForm(
+                'service_3zqkomo',
+                'template_ywylu57',
+                formRef.current,
+                'olk423PwMI8botT3E'
+            );
+            alert("Query sent successfully! 👍");
+            formRef.current.reset();
+        } catch (err) {
+            console.error("EmailJS Error:", err);
+            alert("Error sending message. ❌");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
     useEffect(() => {
         async function fetchBikeDetail() {
             try {
@@ -447,11 +472,49 @@ export default function BikeDetailPage({ params }: { params: Promise<{ id: strin
                         <span className="hover:text-[#79b947] cursor-pointer transition-colors">Tork Motors</span>
                     </div>
 
+
                     {/* COLUMN 4 */}
-                    <div className="md:col-span-3 flex flex-col gap-2">
-                        <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider mb-1">{"//"} CONTACT SUPPORT</span>
-                        <p className="text-neutral-300 font-bold">+91 63506-71636</p>
-                        <a href="mailto:info@evbike.com" className="hover:text-[#79b947] transition-colors text-neutral-400 break-all">info@evbike.com</a>
+                    <div className="md:col-span-3 flex flex-col gap-3">
+                        <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider mb-1">{"//"} CONTACT</span>
+
+                        <form
+                            ref={formRef}
+                            onSubmit={handleContactSubmit}
+                            className="flex flex-col gap-2 w-full"
+                        >
+                            {/* Imp: Name attribute 'from_name' aapke template ke hisab se hona chahiye (jaise screenshot me input me dikha tha) */}
+                            <input
+                                type="text"
+                                name="from_name"
+                                placeholder="Name *"
+                                required
+                                className="w-full bg-[#1e293b] border border-transparent text-white placeholder-neutral-400 text-[12px] rounded-lg p-2.5 outline-none focus:border-[#79b947] transition-colors"
+                            />
+
+                            <input
+                                type="email"
+                                name="reply_to"
+                                placeholder="Email *"
+                                required
+                                className="w-full bg-[#1e293b] border border-transparent text-white placeholder-neutral-400 text-[12px] rounded-lg p-2.5 outline-none focus:border-[#79b947] transition-colors"
+                            />
+
+                            <textarea
+                                name="message"
+                                placeholder="Query / Message *"
+                                required
+                                rows={2}
+                                className="w-full bg-[#1e293b] border border-transparent text-white placeholder-neutral-400 text-[12px] rounded-lg p-2.5 outline-none resize-none focus:border-[#79b947] transition-colors"
+                            />
+
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="w-full bg-white text-black font-bold uppercase text-[11px] tracking-wider py-2.5 rounded-lg hover:bg-neutral-200 transition-colors mt-1 disabled:opacity-50"
+                            >
+                                {isSubmitting ? "SENDING..." : "SUBMIT QUERY"}
+                            </button>
+                        </form>
                     </div>
 
                 </div>
