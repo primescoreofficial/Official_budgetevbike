@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+    http://www.sitemaps.org/schemas/sitemap/0.9
+    http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd
+  "
+>
+
+  <!-- ================================================================
+       BudgetEVBike.in — XML Sitemap
+       Website  : https://www.budgetevbike.in
+       Generated: 2026-07-16
+       Covers   : Static pages + sample dynamic bike detail pages
+  ================================================================== -->
+
+
+  <!-- ──────────────────────────────────────────────────────────────
+       STATIC PAGES
+  ────────────────────────────────────────────────────────────────── -->
+
+  <!-- 1. Main Homepage -->
+  <url>
+    <loc>https://www.budgetevbike.in/</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- 2. Comparison Page -->
+  <url>
+    <loc>https://www.budgetevbike.in/comparison</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 3. Brands Page -->
+  <url>
+    <loc>https://www.budgetevbike.in/brands</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 4. EV Calculator Page -->
+  <url>
+    <loc>https://www.budgetevbike.in/calculator</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 5. Find EV Page -->
+  <url>
+    <loc>https://www.budgetevbike.in/Find-EV</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 6. Charging Stations Page -->
+  <url>
+    <loc>https://www.budgetevbike.in/charging-stations</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+
+  <!-- ──────────────────────────────────────────────────────────────
+       DYNAMIC BIKE DETAIL PAGES  (/bike/[slug])
+       Add one <url> block per vehicle as new models are listed.
+  ────────────────────────────────────────────────────────────────── -->
+
+  <!-- Revolt RV400 -->
+  <url>
+    <loc>https://www.budgetevbike.in/bike/revolt-rv400</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Matter AERA 5000 -->
+  <url>
+    <loc>https://www.budgetevbike.in/bike/matter-aera-5000</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Ola S1 Pro Gen 2 -->
+  <url>
+    <loc>https://www.budgetevbike.in/bike/ola-s1-pro</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Ather 450X Apex -->
+  <url>
+    <loc>https://www.budgetevbike.in/bike/ather-450x-apex</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+</urlset>
